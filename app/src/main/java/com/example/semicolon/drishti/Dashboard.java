@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
@@ -13,6 +14,8 @@ public class Dashboard extends AppCompatActivity {
 
     public static final String TAG = "Dashboard";
 
+    private RecyclerView TimelineRecylerView;
+    private TimeLineAdapter mTimeLineAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +24,7 @@ public class Dashboard extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        TimelineRecylerView = (RecyclerView) findViewById(R.id.recyclerViewtimeline);
 
         int orientation = getResources().getConfiguration().orientation;
 
