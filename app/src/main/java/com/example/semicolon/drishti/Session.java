@@ -204,9 +204,8 @@ public class Session extends AppCompatActivity {
             }, 1000);
 
             //TODO: Change to File if needed
-//            ImageUploadAsyncTask imageUploadAsyncTask = new ImageUploadAsyncTask();
-//            imageUploadAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, outFile.getAbsolutePath());
-
+            ImageUploadAsyncTask imageUploadAsyncTask = new ImageUploadAsyncTask();
+            imageUploadAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, outFile.getAbsoluteFile());
         }
 
 
