@@ -8,51 +8,51 @@ import com.orm.SugarRecord;
 
 public class SessionData extends SugarRecord {
 
-    String S_id;
-    String info;
-    String tag;
-    String level;
+    String image_id; //File name
+    String result;
 
+    String image_location; //location on device
 
+    long milliseconds;
     public SessionData() {
     }
 
-    public SessionData(String s_id, String info, String tag, String level) {
-        S_id = s_id;
-        this.info = info;
-        this.tag = tag;
-        this.level = level;
+    public SessionData(String image_id, String result, String image_location, long milliseconds) {
+        this.image_id = image_id;
+        this.result = result;
+        this.image_location = image_location;
+        this.milliseconds = milliseconds;
     }
 
-    public String getS_id() {
-        return S_id;
+    public String getImage_id() {
+        return image_id;
     }
 
-    public void setS_id(String s_id) {
-        S_id = s_id;
+    public void setImage_id(String image_id) {
+        this.image_id = image_id;
     }
 
-    public String getInfo() {
-        return info;
+    public String getResult() {
+        return result;
     }
 
-    public void setInfo(String info) {
-        this.info = info;
+    public void setResult(String result) {
+        this.result = result;
     }
 
-    public String getTag() {
-        return tag;
+    public String getImage_location() {
+        return image_location;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
+    public void setImage_location(String image_location) {
+        this.image_location = image_location;
     }
 
-    public String getLevel() {
-        return level;
+    public long getMilliseconds() {
+        return milliseconds;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    public void setMilliseconds(long milliseconds) {
+        this.milliseconds = milliseconds;
     }
 }
