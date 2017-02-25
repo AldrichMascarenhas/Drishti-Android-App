@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.1"
     defaultConfig {
         applicationId "com.example.semicolon.drishti"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -40,3 +40,4 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
 
 }
+apply plugin: 'com.google.gms.google-services'
