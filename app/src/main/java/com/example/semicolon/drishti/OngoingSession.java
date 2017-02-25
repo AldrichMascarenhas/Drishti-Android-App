@@ -15,12 +15,14 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.semicolon.drishti.Adapter.OnGoingSessionAdapter;
@@ -32,7 +34,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
@@ -60,6 +65,10 @@ public class OngoingSession extends AppCompatActivity {
     int count = 0;
     private int SESSION_ID;
 
+    int orientation;
+
+    TextView meeting_text, date_time;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,11 +95,19 @@ public class OngoingSession extends AppCompatActivity {
             }
         };
 
-        int orientation = getResources().getConfiguration().orientation;
+        DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
+        String date = df.format(Calendar.getInstance().getTime());
+
+
+        orientation = getResources().getConfiguration().orientation;
 
 
         if (orientation == 1) {
 
+            meeting_text = (TextView) findViewById(R.id.meeting_text);
+            date_time = (TextView) findViewById(R.id.date_time);
+            meeting_text.setText("Meeting " + date);
+            date_time.setText(date);
 
             recyclerView = (RecyclerView) findViewById(R.id.ongoingsession_rv);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
