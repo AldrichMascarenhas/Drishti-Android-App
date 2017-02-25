@@ -15,6 +15,8 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.semicolon.drishti.Model.LoadDataIntoDatabaseAsyncTask;
+import com.example.semicolon.drishti.Model.OnGoingSessionData;
+import com.example.semicolon.drishti.Model.SessionData;
 import com.example.semicolon.drishti.Model.Sessions;
 
 import java.util.List;
@@ -68,8 +70,11 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
 
         }else{
 
-            Toast.makeText(getApplicationContext(), "Count " + initialCount, Toast.LENGTH_LONG).show();
+
             List<Sessions> books = Sessions.listAll(Sessions.class);
+
+            books = Sessions.findWithQuery(Sessions.class, "SELECT * FROM SESSIONS ORDER BY ID DESC");
+
             mTimeLineAdapter = new TimeLineAdapter(books, this);
             TimelineRecylerView.setAdapter(mTimeLineAdapter);
 

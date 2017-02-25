@@ -11,22 +11,19 @@ public class Sessions extends SugarRecord {
     String name;
     int randomID;
 
+    String location;
+
+
     public Sessions()
     {
 
     }
-    public Sessions(String date, String name, int randomID) {
+
+    public Sessions(String date, String name, int randomID, String location) {
         this.date = date;
         this.name = name;
         this.randomID = randomID;
-    }
-
-    public int getRandomID() {
-        return randomID;
-    }
-
-    public void setRandomID(int randomID) {
-        this.randomID = randomID;
+        this.location = location;
     }
 
     public String getDate() {
@@ -43,5 +40,21 @@ public class Sessions extends SugarRecord {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getRandomID() {
+        return randomID;
+    }
+
+    public void setRandomID(int randomID) {
+        this.randomID = randomID;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

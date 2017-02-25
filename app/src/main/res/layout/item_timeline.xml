@@ -22,7 +22,7 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:src="@drawable/ic_storage_black_36dp"
+            android:id="@+id/tv_image"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_margin="10dp" />
@@ -34,7 +34,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="15dp"
                 android:id="@+id/tv_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,6 +43,13 @@
 
             <TextView
                 android:id="@+id/tv_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="13th June 2017"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+            <TextView
+                android:id="@+id/tv_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="13th June 2017"

@@ -145,8 +145,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                 sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
                 recyclerView.setAdapter(sessionAdapter);
 
-                if (sessionDataList.isEmpty())
-                    Snackbar.make(recyclerView, "No notes added.", Snackbar.LENGTH_LONG).show();
+
 
             }
 

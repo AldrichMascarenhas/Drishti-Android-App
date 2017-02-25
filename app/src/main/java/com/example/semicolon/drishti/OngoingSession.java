@@ -18,7 +18,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -30,6 +29,7 @@ import com.example.semicolon.drishti.Adapter.OnGoingSessionAdapter;
 import com.example.semicolon.drishti.Adapter.SessionAdapter;
 import com.example.semicolon.drishti.Model.OnGoingSessionData;
 import com.example.semicolon.drishti.Model.SessionData;
+import com.example.semicolon.drishti.Model.Sessions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -70,6 +70,9 @@ public class OngoingSession extends AppCompatActivity {
 
     TextView meeting_text, date_time;
 
+    //USE THIS FLAG TO SET THE SESSIONS OBJECT IN DB
+    boolean saveInDB = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,8 +81,6 @@ public class OngoingSession extends AppCompatActivity {
         Log.d("SESSION_ID_KEY", "SESSION_ID IS  : " + SESSION_ID + " IN OngoingSession");
 
         toggletoolbar = (Toolbar) findViewById(R.id.toggletoolbar);
-        setSupportActionBar(toggletoolbar);
-
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
 
         handler = new Handler();
@@ -101,6 +102,14 @@ public class OngoingSession extends AppCompatActivity {
         DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
         String date = df.format(Calendar.getInstance().getTime());
 
+        if(saveInDB){
+
+
+            Sessions session5 = new Sessions(date, "Meeting", SESSION_ID, "Persistent Systems Ltd, Verna");
+            session5.save();
+            saveInDB = false;
+        }
+
 
         orientation = getResources().getConfiguration().orientation;
 
@@ -119,16 +128,13 @@ public class OngoingSession extends AppCompatActivity {
             recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
 
             initialCount = OnGoingSessionData.count(OnGoingSessionData.class);
-
             if (initialCount >= 0) {
 
-                onGoingSessionDataList = OnGoingSessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA ORDER BY milliseconds DESC", null);
+                onGoingSessionDataList = SessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA WHERE SID = ? ORDER BY milliseconds DESC",Integer.toString(SESSION_ID));
 
                 onGoingSessionAdapter = new OnGoingSessionAdapter(OngoingSession.this, onGoingSessionDataList);
                 recyclerView.setAdapter(onGoingSessionAdapter);
 
-                if (onGoingSessionDataList.isEmpty())
-                    Snackbar.make(recyclerView, "No notes added.", Snackbar.LENGTH_LONG).show();
 
             }
 
@@ -142,7 +148,7 @@ public class OngoingSession extends AppCompatActivity {
                     long newcount = OnGoingSessionData.count(OnGoingSessionData.class);
                     if (newcount > initialCount) {
 
-                        onGoingSessionDataList = OnGoingSessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA ORDER BY milliseconds DESC", null);
+                        onGoingSessionDataList = SessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA WHERE SID = ? ORDER BY milliseconds DESC",Integer.toString(SESSION_ID));
 
                         onGoingSessionAdapter = new OnGoingSessionAdapter(OngoingSession.this, onGoingSessionDataList);
                         recyclerView.setAdapter(onGoingSessionAdapter);
@@ -314,17 +320,10 @@ public class OngoingSession extends AppCompatActivity {
     public void onBackPressed() {
         if (orientation == 1) {
             //Can go back
-            finish();
+
         } else if (orientation == 2) {
             //Cant go back do nothing
         }
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
     }
 
 
