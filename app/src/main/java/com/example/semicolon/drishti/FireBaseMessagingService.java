@@ -13,6 +13,7 @@ import com.google.firebase.messaging.RemoteMessage;
 public class FireBaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
+    public static final String INTENT_FILTER = "INTENT_FILTER";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -22,7 +23,18 @@ public class FireBaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "Notification Message Body: " + remoteMessage.getNotification().getBody());
         Intent i = new Intent("com.example.semicolon.drishti");
         i.putExtra("message", remoteMessage.getNotification().getBody());
-        sendBroadcast(i);
+        Intent intent = new Intent(INTENT_FILTER);
+        intent.putExtra("message", remoteMessage.getNotification().getBody());
+        sendBroadcast(intent);
+
+
+
         //sendNotification(remoteMessage.getNotification().getBody());
     }
+
+
+
+
+
+
 }

@@ -1,7 +1,11 @@
 package com.example.semicolon.drishti;
 
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
@@ -40,6 +44,8 @@ import com.example.semicolon.drishti.bus.MessageEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 import java.io.File;
@@ -66,6 +72,8 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
     private GestureDetectorCompat mDetector;
     ImageView camera_image_preview;
     ImageView mic;
+    int imagecount;
+    int count;
 
     //boolean to check if it is safe to click an image
     private boolean safeToTakePicture = true;
@@ -76,25 +84,34 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
     private TextToSpeech tts;
     private SessionAdapter sessionAdapter;
     private List<SessionData> sessionDataList = new ArrayList<SessionData>();
+    private List<SessionData> sessionDataListleveltwo = new ArrayList<SessionData>();
     private final int REQ_CODE_SPEECH_INPUT = 100;
+    private SharedPreferences sharedpreferences;
 
     //Orientation
     int orientation;
     private String Utteranceid;
-
+    private  boolean changeofdata;
+    public static final String MyPREFERENCES = "Drishti" ;
+    public int clickcount;
 
     ApplicationClass applicationClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        changeofdata = false;
         setContentView(R.layout.activity_session);
+        registerReceiver(myReceiver, new IntentFilter(FireBaseMessagingService.INTENT_FILTER));
 
         FirebaseApp.initializeApp(this);
         FirebaseMessaging.getInstance().subscribeToTopic("sceneData");
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
+         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
         tts = new TextToSpeech(this, this);
         applicationClass = (ApplicationClass) getApplicationContext();
+        count = 0;
 
 
             Log.d("SESSION_ID_KEY", "SESSION_ID IS  : " + applicationClass.getSESSION_ID() + " IN Session");
@@ -104,7 +121,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 
         if (orientation == 1) {
             //Handle Portrait views here
-
+clickcount = 0;
 
             toolbar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbar object
             setSupportActionBar(toolbar);
@@ -144,6 +161,10 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
             }
 
 
+
+
+
+
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -155,12 +176,25 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                     if (newcount > initialCount) {
 
                         sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA ORDER BY milliseconds DESC", null);
-
+changeofdata = false;
                         sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
                         recyclerView.setAdapter(sessionAdapter);
                         initialCount = newcount;
 
                     }
+
+                    if (changeofdata == true&& clickcount==sharedpreferences.getInt("imagecount",0)) {
+
+
+
+                        tts.speak("We have More Details Updating Info ",TextToSpeech.QUEUE_ADD,null,"hello");
+                        SharedPreferences.Editor editor = sharedpreferences.edit();
+                        editor.putInt("imagecount",0);
+                        editor.commit();
+
+                    }
+
+
 
                     handler.postDelayed(this, 500);
                 }
@@ -172,9 +206,9 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                         @Override
                         public void onItemClick(View view, int position) {
                             TextView name = (TextView) view.findViewById(R.id.info_textview);
-
+                            clickcount++;
                             Utteranceid = this.hashCode() + "";
-                            tts.speak(name.getText().toString(), TextToSpeech.QUEUE_FLUSH, null, Utteranceid);
+                            tts.speak(name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
                         }
                     })
             );
@@ -182,7 +216,9 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 
         } else if (orientation == 2) {
             //Handle Landscape views here
-
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.putInt("imagecount",0);
+            editor.commit();
             mCamera = getCameraInstance();
             mPreview = new CameraPreview(this, mCamera);
             preview = (FrameLayout) findViewById(R.id.camera_preview);
@@ -212,6 +248,66 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 
     }
 
+    private  void update()
+    {
+        long newcount = SessionData.count(SessionData.class);
+        sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA ORDER BY milliseconds DESC", null);
+        changeofdata = false;
+        sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
+        recyclerView.setAdapter(sessionAdapter);
+        initialCount = newcount;
+    }
+
+    private BroadcastReceiver myReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, Intent intent) {
+            String utteranceId = this.hashCode() + "";
+            String text = "There is new Data For You";
+            Log.d("Hello","Hello");
+         final String a =  intent.getStringExtra("message");
+runOnUiThread(new Runnable() {
+    @Override
+    public void run() {
+        Log.d("Hello","Hello");
+
+        String jsonData = a;
+        String result =" ";
+        String image_id =" ";
+
+        count++;
+
+        try {
+            JSONObject Jobject = new JSONObject(jsonData);
+            image_id = Jobject.getString("image_id");
+          result =    Jobject.getString("result");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+Toast.makeText(Session.this,result,Toast.LENGTH_LONG).show();
+
+         sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA WHERE imageid=?",image_id);
+        if(sessionDataList.size()!=0)
+        {
+            Log.d("hello",String.valueOf(imagecount));
+            SessionData book = SessionData.findById(SessionData.class, sessionDataList.get(0).getId());
+            book.setResult(result); // modify the values
+            book.save();
+            Log.d("give",String.valueOf(sharedpreferences.getInt("imagecount",0)));
+            if(count == sharedpreferences.getInt("imagecount",0)) {
+                changeofdata = true;
+
+
+            }
+
+        }
+
+
+    }
+});
+
+        }
+    };
+
     //Get a camera instance here
     public static Camera getCameraInstance() {
         Camera c = null;
@@ -229,6 +325,32 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 
             int result = tts.setLanguage(new Locale("en", "IN"));
 
+            tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                @Override
+                public void onStart(String utteranceId) {
+
+                }
+
+                @Override
+                public void onDone(String utteranceId) {
+                    Log.d("utteranceid",utteranceId);
+if(utteranceId.equals("hello"))
+{
+runOnUiThread(new Runnable() {
+    @Override
+    public void run() {
+        update();
+    }
+});
+
+}
+                }
+
+                @Override
+                public void onError(String utteranceId) {
+
+                }
+            });
 
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -253,6 +375,12 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                 safeToTakePicture = false;
                 Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
                 mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
+               int c = sharedpreferences.getInt("imagecount",0);
+                c++;
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putInt("imagecount",c);
+                editor.commit();
+                imagecount++;
 
             } else {
                 Toast.makeText(getApplicationContext(), "Please try again!", Toast.LENGTH_LONG).show();
