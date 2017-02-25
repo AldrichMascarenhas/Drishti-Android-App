@@ -1,7 +1,10 @@
 package com.example.semicolon.drishti;
 
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -14,6 +17,7 @@ import android.speech.RecognizerIntent;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +37,15 @@ import com.example.semicolon.drishti.Adapter.SessionAdapter;
 import com.example.semicolon.drishti.Model.OnGoingSessionData;
 import com.example.semicolon.drishti.Model.SessionData;
 import com.example.semicolon.drishti.Model.Sessions;
+import com.example.semicolon.drishti.bus.MessageEvent;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -46,6 +59,9 @@ import java.util.List;
 import java.util.Locale;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static android.R.attr.orientation;
 
@@ -53,7 +69,7 @@ import static android.R.attr.orientation;
  * Created by semicolon on 2/25/2017.
  */
 
-public class OngoingSession extends AppCompatActivity {
+public class OngoingSession extends AppCompatActivity implements SummaryAsyncTaskResponse{
     Handler handler;
     Toolbar toggletoolbar;
     private RecyclerView recyclerView;
@@ -80,12 +96,27 @@ public class OngoingSession extends AppCompatActivity {
     //USE THIS FLAG TO SET THE SESSIONS OBJECT IN DB
     boolean saveInDB = true;
 
+    //OKHTTP
+    OkHttpClient client = new OkHttpClient();
+    Response response;
+    Request request;
+
+    //SUMMARY
+    TextView summarytextview;
+    CardView summarycard;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ongoingsession);
         SESSION_ID = getIntent().getIntExtra("SESSION_ID_KEY", 0);
         Log.d("SESSION_ID_KEY", "SESSION_ID IS  : " + SESSION_ID + " IN OngoingSession");
+
+
+        registerReceiver(myReceiver, new IntentFilter(FireBaseMessagingService.INTENT_FILTER));
+
+        FirebaseMessaging.getInstance().subscribeToTopic("sceneData");
+
 
         toggletoolbar = (Toolbar) findViewById(R.id.toggletoolbar);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
@@ -109,7 +140,7 @@ public class OngoingSession extends AppCompatActivity {
         DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
         String date = df.format(Calendar.getInstance().getTime());
 
-        if(saveInDB){
+        if (saveInDB) {
 
 
             Sessions session5 = new Sessions(date, "Meeting", SESSION_ID, "Persistent Systems Ltd, Verna");
@@ -130,7 +161,8 @@ public class OngoingSession extends AppCompatActivity {
             date_time = (TextView) findViewById(R.id.date_time);
             meeting_text.setText("Meeting " + date);
             date_time.setText(date);
-
+            summarytextview = (TextView) findViewById(R.id.summarytextview);
+            summarycard = (CardView) findViewById(R.id.summarycard);
             recyclerView = (RecyclerView) findViewById(R.id.ongoingsession_rv);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(linearLayoutManager);
@@ -140,7 +172,7 @@ public class OngoingSession extends AppCompatActivity {
             initialCount = OnGoingSessionData.count(OnGoingSessionData.class);
             if (initialCount >= 0) {
 
-                onGoingSessionDataList = SessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA WHERE SID = ? ORDER BY milliseconds DESC",Integer.toString(SESSION_ID));
+                onGoingSessionDataList = SessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA WHERE SID = ? ORDER BY milliseconds DESC", Integer.toString(SESSION_ID));
 
                 onGoingSessionAdapter = new OnGoingSessionAdapter(OngoingSession.this, onGoingSessionDataList);
                 recyclerView.setAdapter(onGoingSessionAdapter);
@@ -158,7 +190,7 @@ public class OngoingSession extends AppCompatActivity {
                     long newcount = OnGoingSessionData.count(OnGoingSessionData.class);
                     if (newcount > initialCount) {
 
-                        onGoingSessionDataList = SessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA WHERE SID = ? ORDER BY milliseconds DESC",Integer.toString(SESSION_ID));
+                        onGoingSessionDataList = SessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA WHERE SID = ? ORDER BY milliseconds DESC", Integer.toString(SESSION_ID));
 
                         onGoingSessionAdapter = new OnGoingSessionAdapter(OngoingSession.this, onGoingSessionDataList);
                         recyclerView.setAdapter(onGoingSessionAdapter);
@@ -373,14 +405,9 @@ public class OngoingSession extends AppCompatActivity {
 
                         Toast.makeText(getApplicationContext(), "Stop voice", Toast.LENGTH_SHORT).show();
 
-
-                        //READ CARD HERE
-
-
-
-//                        Intent intent = new Intent(OngoingSession.this, Dashboard.class);
-//                        startActivity(intent);
-
+                        SummaryAsyncTask summaryAsyncTask = new SummaryAsyncTask(SESSION_ID);
+                        summaryAsyncTask.delegate = this;
+                        summaryAsyncTask.execute();
 
                     } else {
 
@@ -394,6 +421,61 @@ public class OngoingSession extends AppCompatActivity {
     }
 
 
+    private BroadcastReceiver myReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, Intent intent) {
+            String utteranceId = this.hashCode() + "";
+            String text = "There is new Data For You";
+            Log.d("Hello", "Hello");
+            final String a = intent.getStringExtra("message");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("Hello", "Hello");
+
+                    String jsonData = a;
+                    String result = " ";
+                    String image_id = " ";
+                    count++;
+
+                    try {
+                        JSONObject Jobject = new JSONObject(jsonData);
+                        image_id = Jobject.getString("image_id");
+                        result = Jobject.getString("result");
+
+
+                        onGoingSessionDataList = OnGoingSessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA WHERE imageid=?", image_id);
+                        if (onGoingSessionDataList.size() != 0) {
+                            OnGoingSessionData book = OnGoingSessionData.findById(OnGoingSessionData.class, onGoingSessionDataList.get(0).getId());
+                            book.setResult(result); // modify the values
+                            book.save();
+
+                            onGoingSessionDataList = SessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA WHERE SID = ? ORDER BY milliseconds DESC", Integer.toString(SESSION_ID));
+
+                            onGoingSessionAdapter = new OnGoingSessionAdapter(OngoingSession.this, onGoingSessionDataList);
+                            recyclerView.setAdapter(onGoingSessionAdapter);
+
+                        }
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+            });
+
+        }
+    };
+
+    @Override
+    public void processFinish(String output) {
+
+        summarycard.setVisibility(View.VISIBLE);
+        summarytextview.setText(output);
+
+    }
 }
 
 

@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:static_card_with_data="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
 
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toggletoolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:background="@color/colorPrimary"
         android:elevation="4dp"
-        android:theme="@@style/ThemeOverlay.AppCompat.Dark"
-        android:layout_alignParentTop="true"/>
+        android:theme="@@style/ThemeOverlay.AppCompat.Dark" />
 
 
     <android.support.v7.widget.CardView
         android:id="@+id/static_card_with_data"
-        android:layout_below="@+id/toggletoolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/toggletoolbar"
         android:layout_margin="8dp"
+        static_card_with_data:cardBackgroundColor="@color/textBackground"
         static_card_with_data:cardCornerRadius="5dp"
-        static_card_with_data:cardElevation="3dp"
-        static_card_with_data:cardBackgroundColor="@color/textBackground">
+        static_card_with_data:cardElevation="3dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,89 +35,90 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:orientation="horizontal">
-                <TextView
-                    android:layout_marginLeft="4dp"
-                    android:padding="2dp"
-                    android:textStyle="bold"
-                    android:text="Session Name: "
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
                     android:padding="2dp"
+                    android:text="Session Name: "
+                    android:textStyle="bold" />
+
+                <TextView
                     android:id="@+id/meeting_text"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:padding="2dp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:orientation="horizontal">
+
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
                     android:padding="2dp"
-                    android:textStyle="bold"
-                    android:text="Location: "
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:padding="2dp"
-                    android:text="Persistent Systems Limited"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_marginLeft="4dp"
-                    android:padding="2dp"
-                    android:textStyle="bold"
                     android:text="Date: "
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:textStyle="bold" />
 
                 <TextView
-                    android:padding="2dp"
                     android:id="@+id/date_time"
-                    android:text=""
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:text="" />
             </LinearLayout>
         </LinearLayout>
 
 
     </android.support.v7.widget.CardView>
 
+    <android.support.v7.widget.CardView
+        android:visibility="gone"
+        android:id="@+id/summarycard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/static_card_with_data"
+        android:layout_margin="8dp"
+        static_card_with_data:cardBackgroundColor="@color/textBackground"
+        static_card_with_data:cardCornerRadius="5dp"
+        static_card_with_data:cardElevation="3dp">
+
+
+        <TextView
+            android:text="ffhghririrhvriirrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/summarytextview"
+            android:textSize="15sp"/>
+    </android.support.v7.widget.CardView>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/mic_container"
+        android:layout_below="@+id/summarycard"
         android:orientation="vertical"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:paddingTop="8dp"
-        android:layout_above="@+id/mic_container"
-        android:layout_below="@+id/static_card_with_data">
+        android:paddingTop="8dp">
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_below="@+id/static_card_with_data"
-        android:id="@+id/ongoingsession_rv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        </android.support.v7.widget.RecyclerView>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/ongoingsession_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/static_card_with_data"></android.support.v7.widget.RecyclerView>
     </LinearLayout>
 
     <RelativeLayout
-        android:layout_alignParentBottom="true"
+        android:id="@+id/mic_container"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@color/textBackground"
-        android:id="@+id/mic_container">
+        android:layout_alignParentBottom="true"
+        android:background="@color/textBackground">
 
         <ImageView
             android:id="@+id/mic_ogs"
@@ -128,8 +129,6 @@
 
 
     </RelativeLayout>
-
-
 
 
 </RelativeLayout>

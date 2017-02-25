@@ -111,7 +111,6 @@ public class ImageUploadAsyncTaskOngoing extends AsyncTask<Void, String, Long> {
         super.onPostExecute(dbID);
 
 
-        EventBus.getDefault().post(new MessageEvent(dbID));
 
     }
 

@@ -110,7 +110,6 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
         setContentView(R.layout.activity_session);
         registerReceiver(myReceiver, new IntentFilter(FireBaseMessagingService.INTENT_FILTER));
 
-        FirebaseApp.initializeApp(this);
         FirebaseMessaging.getInstance().subscribeToTopic("sceneData");
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
@@ -545,34 +544,9 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
     }
 
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
 
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
 
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvent event) {
-
-//
-//        SessionData sessionData = SessionData.findById(SessionData.class, event.getDbID());
-//        Log.d(TAG, "Query resut : " + sessionData.getResult());
-//
-//        sessionDataList.add(0, sessionData);
-////        sessionAdapter.addItemsToList(sessionData);
-//
-//
-//        long dbcount = SessionData.count(SessionData.class);
-//        Log.d(TAG, "onMessageEvent Receive. DB count : " + dbcount);
-    }
 
     @Override
     protected void onDestroy() {
