@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
@@ -81,6 +82,11 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
     int orientation;
     private String Utteranceid;
 
+    //SESSION ID
+    int SESSION_ID;
+    Random rand = new Random();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +96,9 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
         FirebaseMessaging.getInstance().subscribeToTopic("sceneData");
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
         tts = new TextToSpeech(this, this);
+
+        SESSION_ID = rand.nextInt(297322) + 1;
+
 
 
         orientation = getResources().getConfiguration().orientation;
@@ -116,8 +125,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
             mic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Utteranceid = "speech";
-                    tts.speak("Do You Want to Start A Session", TextToSpeech.QUEUE_FLUSH, null, Utteranceid);
+                        promptSpeechInput();
                 }
             });
 
@@ -222,25 +230,6 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 
             int result = tts.setLanguage(new Locale("en", "IN"));
 
-            tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                @Override
-                public void onStart(String utteranceId) {
-
-                }
-
-                @Override
-                public void onDone(String utteranceId) {
-                    if (utteranceId.equals("speech")) ;
-                    {
-                        promptSpeechInput();
-                    }
-                }
-
-                @Override
-                public void onError(String utteranceId) {
-
-                }
-            });
 
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -364,8 +353,8 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
             }, 1000);
 
             //TODO: Change to File if needed
-            ImageUploadAsyncTask imageUploadAsyncTask = new ImageUploadAsyncTask();
-            imageUploadAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, outFile.getAbsoluteFile());
+            ImageUploadAsyncTask imageUploadAsyncTask = new ImageUploadAsyncTask(SESSION_ID, outFile.getAbsoluteFile());
+            imageUploadAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
 
@@ -409,7 +398,11 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     if (result.get(0).contains("yes")) {
-                        startActivity(new Intent(Session.this, OngoingSession.class));
+
+                        Intent intent = new Intent(Session.this, OngoingSession.class);
+                        intent.putExtra("SESSION_ID_KEY", SESSION_ID);
+                        startActivity(intent);
+
                     } else {
 
                     }

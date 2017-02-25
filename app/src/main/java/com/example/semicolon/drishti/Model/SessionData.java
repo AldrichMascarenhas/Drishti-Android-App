@@ -14,14 +14,18 @@ public class SessionData extends SugarRecord {
     String image_location; //location on device
 
     long milliseconds;
+
+    int SESSION_ID;
+
     public SessionData() {
     }
 
-    public SessionData(String image_id, String result, String image_location, long milliseconds) {
+    public SessionData(String image_id, String result, String image_location, long milliseconds, int SESSION_ID) {
         this.image_id = image_id;
         this.result = result;
         this.image_location = image_location;
         this.milliseconds = milliseconds;
+        this.SESSION_ID = SESSION_ID;
     }
 
     public String getImage_id() {
@@ -54,5 +58,13 @@ public class SessionData extends SugarRecord {
 
     public void setMilliseconds(long milliseconds) {
         this.milliseconds = milliseconds;
+    }
+
+    public int getSESSION_ID() {
+        return SESSION_ID;
+    }
+
+    public void setSESSION_ID(int SESSION_ID) {
+        this.SESSION_ID = SESSION_ID;
     }
 }

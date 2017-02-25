@@ -25,7 +25,7 @@ import okhttp3.Response;
  * Created by semicolon on 2/25/2017.
  */
 
-public class ImageUploadAsyncTask extends AsyncTask<File, String, Long> {
+public class ImageUploadAsyncTask extends AsyncTask<Void, String, Long> {
 
     public static final String TAG = "ImageUploadAsyncTask";
 
@@ -45,15 +45,17 @@ public class ImageUploadAsyncTask extends AsyncTask<File, String, Long> {
     Long databaseID;
 
 
+    File file;
+    int SESSION_ID;
+
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
     }
 
     @Override
-    protected Long doInBackground(File... files) {
+    protected Long doInBackground(Void ... params) {
 
-        File file = files[0];
 
 
 
@@ -86,7 +88,7 @@ public class ImageUploadAsyncTask extends AsyncTask<File, String, Long> {
                     long unixTime = System.currentTimeMillis();
                     Log.d(TAG, "Linux time : " + unixTime);
 
-                    SessionData sessionData = new SessionData(Jobject.getString("image_id"),Jobject.getString("result"), file.getAbsolutePath(), unixTime);
+                    SessionData sessionData = new SessionData(Jobject.getString("image_id"),Jobject.getString("result"), file.getAbsolutePath(), unixTime, SESSION_ID);
                     sessionData.save();
 
                     databaseID = sessionData.getId();
@@ -118,7 +120,8 @@ public class ImageUploadAsyncTask extends AsyncTask<File, String, Long> {
     }
 
 
-    public ImageUploadAsyncTask() {
-        super();
+    public ImageUploadAsyncTask(int SESSION_ID, File file) {
+        this.SESSION_ID = SESSION_ID;
+        this.file = file;
     }
 }
