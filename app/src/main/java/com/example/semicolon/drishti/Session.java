@@ -75,7 +75,6 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
     long initialCount;
     private TextToSpeech tts;
     private SessionAdapter sessionAdapter;
-    private List<SessionData> sessionDataList = new ArrayList<SessionData>();
     private final int REQ_CODE_SPEECH_INPUT = 100;
 
     //Orientation
@@ -84,6 +83,11 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 
 
     ApplicationClass applicationClass;
+
+    //handle all updatres in lists here
+    private List<SessionData> sessionDataList = new ArrayList<SessionData>();
+    private List<SessionData> newSessionDataList = new ArrayList<SessionData>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +119,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(linearLayoutManager);
             recyclerView.setItemAnimator(new SlideInLeftAnimator());
+            recyclerView.getItemAnimator().setAddDuration(1000);
 
             recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
 
@@ -154,10 +159,14 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                     long newcount = SessionData.count(SessionData.class);
                     if (newcount > initialCount) {
 
-                        sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA ORDER BY milliseconds DESC", null);
+                        newSessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA ORDER BY milliseconds DESC", null);
 
-                        sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
+                        Log.d("NEWLIST", "Updated List with size : " + newSessionDataList.size());
+                        Log.d("NEWLIST", "Old List size : " + sessionDataList.size());
+
+                        sessionAdapter = new SessionAdapter(Session.this, newSessionDataList);
                         recyclerView.setAdapter(sessionAdapter);
+                        recyclerView.smoothScrollToPosition(0);
                         initialCount = newcount;
 
                     }
