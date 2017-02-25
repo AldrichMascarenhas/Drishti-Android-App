@@ -1,5 +1,7 @@
 package com.example.semicolon.drishti;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -8,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.speech.RecognizerIntent;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
@@ -65,6 +69,9 @@ public class OngoingSession extends AppCompatActivity {
     private boolean safeToTakePicture = true;
     int count = 0;
     private int SESSION_ID;
+
+    ImageView mic;
+    private final int REQ_CODE_SPEECH_INPUT = 100;
 
     int orientation;
 
@@ -116,6 +123,9 @@ public class OngoingSession extends AppCompatActivity {
 
         if (orientation == 1) {
 
+            mic = (ImageView) findViewById(R.id.mic_ogs);
+
+
             meeting_text = (TextView) findViewById(R.id.meeting_text);
             date_time = (TextView) findViewById(R.id.date_time);
             meeting_text.setText("Meeting " + date);
@@ -159,6 +169,13 @@ public class OngoingSession extends AppCompatActivity {
                     handler.postDelayed(this, 1);
                 }
             }, 1);
+
+            mic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    promptSpeechInput();
+                }
+            });
 
         } else if (orientation == 2) {
             mCamera = getCameraInstance();
@@ -323,6 +340,56 @@ public class OngoingSession extends AppCompatActivity {
 
         } else if (orientation == 2) {
             //Cant go back do nothing
+        }
+    }
+
+    private void promptSpeechInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "Say Something");
+        intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 1);
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(getApplicationContext(), "Not Supported",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    if (result.get(0).contains("stop")) {
+
+                        Toast.makeText(getApplicationContext(), "Stop voice", Toast.LENGTH_SHORT).show();
+
+
+                        //READ CARD HERE
+
+
+
+//                        Intent intent = new Intent(OngoingSession.this, Dashboard.class);
+//                        startActivity(intent);
+
+
+                    } else {
+
+                    }
+
+                }
+                break;
+            }
+
         }
     }
 

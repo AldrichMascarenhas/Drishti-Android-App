@@ -408,7 +408,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    if (result.get(0).contains("yes")) {
+                    if (result.get(0).contains("start")) {
 
                         Intent intent = new Intent(Session.this, OngoingSession.class);
                         intent.putExtra("SESSION_ID_KEY", applicationClass.getSESSION_ID());
