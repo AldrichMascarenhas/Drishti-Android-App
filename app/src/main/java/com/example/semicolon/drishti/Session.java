@@ -19,6 +19,7 @@ import android.speech.tts.UtteranceProgressListener;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -91,11 +92,14 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
     //Orientation
     int orientation;
     private String Utteranceid;
-    private  boolean changeofdata;
-    public static final String MyPREFERENCES = "Drishti" ;
+    private boolean changeofdata;
+    public static final String MyPREFERENCES = "Drishti";
     public int clickcount;
 
     ApplicationClass applicationClass;
+    private CardView facescard;
+    private ImageView facesImageView;
+    private TextView facetext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,21 +111,26 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
         FirebaseApp.initializeApp(this);
         FirebaseMessaging.getInstance().subscribeToTopic("sceneData");
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
-         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
         tts = new TextToSpeech(this, this);
         applicationClass = (ApplicationClass) getApplicationContext();
         count = 0;
 
 
-            Log.d("SESSION_ID_KEY", "SESSION_ID IS  : " + applicationClass.getSESSION_ID() + " IN Session");
+        Log.d("SESSION_ID_KEY", "SESSION_ID IS  : " + applicationClass.getSESSION_ID() + " IN Session");
 
 
         orientation = getResources().getConfiguration().orientation;
 
         if (orientation == 1) {
             //Handle Portrait views here
-clickcount = 0;
+            clickcount = 0;
+
+
+            facescard = (CardView) findViewById(R.id.faces_card);
+            facetext = (TextView) findViewById(R.id.face_textview);
+
 
             toolbar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbar object
             setSupportActionBar(toolbar);
@@ -161,10 +170,6 @@ clickcount = 0;
             }
 
 
-
-
-
-
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -176,24 +181,22 @@ clickcount = 0;
                     if (newcount > initialCount) {
 
                         sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA ORDER BY milliseconds DESC", null);
-changeofdata = false;
+                        changeofdata = false;
                         sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
                         recyclerView.setAdapter(sessionAdapter);
                         initialCount = newcount;
 
                     }
 
-                    if (changeofdata == true&& clickcount==sharedpreferences.getInt("imagecount",0)) {
+                    if (changeofdata == true && clickcount == sharedpreferences.getInt("imagecount", 0)) {
 
 
-
-                        tts.speak("We have More Details Updating Info ",TextToSpeech.QUEUE_ADD,null,"hello");
+                        tts.speak("We have More Details Updating Info ", TextToSpeech.QUEUE_ADD, null, "hello");
                         SharedPreferences.Editor editor = sharedpreferences.edit();
-                        editor.putInt("imagecount",0);
+                        editor.putInt("imagecount", 0);
                         editor.commit();
 
                     }
-
 
 
                     handler.postDelayed(this, 500);
@@ -217,7 +220,7 @@ changeofdata = false;
         } else if (orientation == 2) {
             //Handle Landscape views here
             SharedPreferences.Editor editor = sharedpreferences.edit();
-            editor.putInt("imagecount",0);
+            editor.putInt("imagecount", 0);
             editor.commit();
             mCamera = getCameraInstance();
             mPreview = new CameraPreview(this, mCamera);
@@ -248,8 +251,7 @@ changeofdata = false;
 
     }
 
-    private  void update()
-    {
+    private void update() {
         long newcount = SessionData.count(SessionData.class);
         sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA ORDER BY milliseconds DESC", null);
         changeofdata = false;
@@ -263,47 +265,53 @@ changeofdata = false;
         public void onReceive(final Context context, Intent intent) {
             String utteranceId = this.hashCode() + "";
             String text = "There is new Data For You";
-            Log.d("Hello","Hello");
-         final String a =  intent.getStringExtra("message");
-runOnUiThread(new Runnable() {
-    @Override
-    public void run() {
-        Log.d("Hello","Hello");
+            Log.d("Hello", "Hello");
+            final String a = intent.getStringExtra("message");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("Hello", "Hello");
 
-        String jsonData = a;
-        String result =" ";
-        String image_id =" ";
+                    String jsonData = a;
+                    String result = " ";
+                    String image_id = " ";
+                    String tag = " ";
 
-        count++;
+                    count++;
 
-        try {
-            JSONObject Jobject = new JSONObject(jsonData);
-            image_id = Jobject.getString("image_id");
-          result =    Jobject.getString("result");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-Toast.makeText(Session.this,result,Toast.LENGTH_LONG).show();
-
-         sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA WHERE imageid=?",image_id);
-        if(sessionDataList.size()!=0)
-        {
-            Log.d("hello",String.valueOf(imagecount));
-            SessionData book = SessionData.findById(SessionData.class, sessionDataList.get(0).getId());
-            book.setResult(result); // modify the values
-            book.save();
-            Log.d("give",String.valueOf(sharedpreferences.getInt("imagecount",0)));
-            if(count == sharedpreferences.getInt("imagecount",0)) {
-                changeofdata = true;
-
-
-            }
-
-        }
+                    try {
+                        JSONObject Jobject = new JSONObject(jsonData);
+                        image_id = Jobject.getString("image_id");
+                        result = Jobject.getString("result");
+                        tag =Jobject.getString("tag");
+                        if (tag.equals("faces")) {
+                            Toast.makeText(Session.this, Jobject.getString("result"), Toast.LENGTH_LONG).show();
+                            facescard.setVisibility(View.VISIBLE);
+                            facetext.setText(Jobject.getString("result"));
+                        } else {
+                            sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA WHERE imageid=?", image_id);
+                            if (sessionDataList.size() != 0) {
+                                Log.d("hello", String.valueOf(imagecount));
+                                SessionData book = SessionData.findById(SessionData.class, sessionDataList.get(0).getId());
+                                book.setResult(result); // modify the values
+                                book.save();
+                                Log.d("give", String.valueOf(sharedpreferences.getInt("imagecount", 0)));
+                                if (count == sharedpreferences.getInt("imagecount", 0)) {
+                                    changeofdata = true;
 
 
-    }
-});
+                                }
+
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+//Toast.makeText(Session.this,result,Toast.LENGTH_LONG).show();
+
+
+                }
+            });
 
         }
     };
@@ -333,17 +341,16 @@ Toast.makeText(Session.this,result,Toast.LENGTH_LONG).show();
 
                 @Override
                 public void onDone(String utteranceId) {
-                    Log.d("utteranceid",utteranceId);
-if(utteranceId.equals("hello"))
-{
-runOnUiThread(new Runnable() {
-    @Override
-    public void run() {
-        update();
-    }
-});
+                    Log.d("utteranceid", utteranceId);
+                    if (utteranceId.equals("hello")) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                update();
+                            }
+                        });
 
-}
+                    }
                 }
 
                 @Override
@@ -375,10 +382,10 @@ runOnUiThread(new Runnable() {
                 safeToTakePicture = false;
                 Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
                 mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
-               int c = sharedpreferences.getInt("imagecount",0);
+                int c = sharedpreferences.getInt("imagecount", 0);
                 c++;
                 SharedPreferences.Editor editor = sharedpreferences.edit();
-                editor.putInt("imagecount",c);
+                editor.putInt("imagecount", c);
                 editor.commit();
                 imagecount++;
 
