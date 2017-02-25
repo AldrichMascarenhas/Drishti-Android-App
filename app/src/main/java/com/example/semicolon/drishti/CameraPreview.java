@@ -27,13 +27,17 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         Camera.Parameters parameters = camera.getParameters();
         List<Camera.Size> sizes = parameters.getSupportedPictureSizes();
         Camera.Size size = sizes.get(0);
-        for (int i = 0; i < sizes.size(); i++) {
-            if (sizes.get(i).width > size.width)
-                size = sizes.get(i);
-        }
+
+
+//        for (int i = 0; i < sizes.size(); i++) {
+////            if (sizes.get(i).width > size.width)
+////                size = sizes.get(i);
+//
+//            Log.d(TAG, "Data : W = " + sizes.get(i).width + " H = " + sizes.get(i).height);
+//        }
 
         //Set Picture Size to MAX
-        parameters.setPictureSize(size.width, size.height);
+        parameters.setPictureSize(1280, 720);
         camera.setParameters(parameters);
 
 

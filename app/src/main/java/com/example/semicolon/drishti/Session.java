@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,7 +36,7 @@ public class Session extends AppCompatActivity {
     ImageView camera_image_preview;
 
     //boolean to check if it is safe to click an image
-    private boolean safeToTakePicture = false;
+    private boolean safeToTakePicture = true;
 
 
     @Override
@@ -64,6 +65,8 @@ public class Session extends AppCompatActivity {
             Camera.Parameters params = mCamera.getParameters();
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             mCamera.setParameters(params);
+
+
 
             preview.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -97,10 +100,18 @@ public class Session extends AppCompatActivity {
 
         @Override
         public boolean onDoubleTap(MotionEvent event) {
-            Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
-            mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
+            if(safeToTakePicture) {
+                safeToTakePicture = false;
+                Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
+                mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
+
+            }
+            else{
+                Toast.makeText(getApplicationContext(), "Please try again!", Toast.LENGTH_LONG).show();
+            }
 
             return true;
+
         }
 
     }
@@ -175,6 +186,8 @@ public class Session extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+
+            safeToTakePicture = true;
 
             myBitmap = BitmapFactory.decodeFile(outFile.getAbsolutePath());
             camera_image_preview.setVisibility(View.VISIBLE);
