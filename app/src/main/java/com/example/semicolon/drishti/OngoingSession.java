@@ -369,7 +369,7 @@ public class OngoingSession extends AppCompatActivity {
 
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    if (result.get(0).contains("stop")) {
+                    if (!result.isEmpty()) {
 
                         Toast.makeText(getApplicationContext(), "Stop voice", Toast.LENGTH_SHORT).show();
 
