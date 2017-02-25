@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +21,8 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
     private TextToSpeech tts;
     private RelativeLayout header;
 
+    private RecyclerView TimelineRecylerView;
+    private TimeLineAdapter mTimeLineAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,7 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
             }
         });
 
+        TimelineRecylerView = (RecyclerView) findViewById(R.id.recyclerViewtimeline);
 
         int orientation = getResources().getConfiguration().orientation;
 
