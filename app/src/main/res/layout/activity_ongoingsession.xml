@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:static_card_with_data="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
@@ -18,68 +20,112 @@
         android:id="@+id/static_card_with_data"
         android:layout_below="@+id/toggletoolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        static_card_with_data:cardCornerRadius="5dp"
+        static_card_with_data:cardElevation="3dp"
+        static_card_with_data:cardBackgroundColor="@color/textBackground">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:text="Session Name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_marginLeft="4dp"
+                    android:padding="2dp"
+                    android:textStyle="bold"
+                    android:text="Session Name: "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/meeting_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                <TextView
+                    android:padding="2dp"
+                    android:id="@+id/meeting_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
-            <TextView
-                android:text="Current Location"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_marginLeft="4dp"
+                    android:padding="2dp"
+                    android:textStyle="bold"
+                    android:text="Location: "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-            <TextView
-                android:text="Persistent Systems Limited"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                <TextView
+                    android:padding="2dp"
+                    android:text="Persistent Systems Limited"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
 
-            <TextView
-                android:text="Current Date and Time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_marginLeft="4dp"
+                    android:padding="2dp"
+                    android:textStyle="bold"
+                    android:text="Date: "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/date_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
+                <TextView
+                    android:padding="2dp"
+                    android:id="@+id/date_time"
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
         </LinearLayout>
 
 
     </android.support.v7.widget.CardView>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:layout_above="@+id/mic_container"
+        android:layout_below="@+id/static_card_with_data">
 
     <android.support.v7.widget.RecyclerView
         android:layout_below="@+id/static_card_with_data"
         android:id="@+id/ongoingsession_rv"
         android:layout_width="match_parent"
-        android:layout_height="450dp">
+        android:layout_height="match_parent">
         </android.support.v7.widget.RecyclerView>
+    </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/miccontainer"
-        android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
-        android:background="@color/black"
-        android:layout_height="wrap_content">
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:src="@drawable/ic_mic_white_24dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/textBackground"
+        android:id="@+id/mic_container">
+
+        <ImageView
+            android:id="@+id/mic"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
             android:layout_centerInParent="true"
-            android:layout_height="wrap_content" />
+            android:src="@drawable/ic_mic_none_black_36dp" />
+
 
     </RelativeLayout>
 

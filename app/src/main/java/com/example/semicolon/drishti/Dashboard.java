@@ -5,12 +5,19 @@ import android.content.res.Configuration;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
+import com.example.semicolon.drishti.Model.LoadDataIntoDatabaseAsyncTask;
+import com.example.semicolon.drishti.Model.Sessions;
+
+import java.util.List;
 import java.util.Locale;
 
 import static android.R.attr.value;
@@ -24,6 +31,7 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
     private RecyclerView TimelineRecylerView;
     private TimeLineAdapter mTimeLineAdapter;
 
+    long initialCount;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +50,32 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
         });
 
         TimelineRecylerView = (RecyclerView) findViewById(R.id.recyclerViewtimeline);
+
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        TimelineRecylerView.setLayoutManager(linearLayoutManager);
+        TimelineRecylerView.setHasFixedSize(true);
+
+
+        initialCount = Sessions.count(Sessions.class);
+
+        //Sugar orm
+        if (initialCount == 0) {
+
+            LoadDataIntoDatabaseAsyncTask loadDataIntoDatabaseAsyncTask = new LoadDataIntoDatabaseAsyncTask();
+            loadDataIntoDatabaseAsyncTask.execute();
+
+
+        }else{
+
+            Toast.makeText(getApplicationContext(), "Count " + initialCount, Toast.LENGTH_LONG).show();
+            List<Sessions> books = Sessions.listAll(Sessions.class);
+            mTimeLineAdapter = new TimeLineAdapter(books, this);
+            TimelineRecylerView.setAdapter(mTimeLineAdapter);
+
+            System.out.println("Hello" + books.size());
+
+        }
 
         int orientation = getResources().getConfiguration().orientation;
 
@@ -86,5 +120,11 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
             tts.stop();
             tts.shutdown();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 }

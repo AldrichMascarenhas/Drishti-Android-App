@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -77,6 +78,8 @@ public class OngoingSession extends AppCompatActivity {
         Log.d("SESSION_ID_KEY", "SESSION_ID IS  : " + SESSION_ID + " IN OngoingSession");
 
         toggletoolbar = (Toolbar) findViewById(R.id.toggletoolbar);
+        setSupportActionBar(toggletoolbar);
+
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
 
         handler = new Handler();
@@ -315,6 +318,13 @@ public class OngoingSession extends AppCompatActivity {
         } else if (orientation == 2) {
             //Cant go back do nothing
         }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
 
