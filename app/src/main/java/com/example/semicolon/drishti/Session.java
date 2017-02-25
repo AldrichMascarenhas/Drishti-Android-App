@@ -55,6 +55,9 @@ public class Session extends AppCompatActivity {
     private SessionAdapter sessionAdapter;
     private List<SessionData> sessionDataList = new ArrayList<SessionData>();
 
+    //Orientation
+    int orientation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +67,7 @@ public class Session extends AppCompatActivity {
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
 
 
-        int orientation = getResources().getConfiguration().orientation;
+         orientation = getResources().getConfiguration().orientation;
 
         if (orientation == 1) {
             //Handle Portrait views here
@@ -257,4 +260,13 @@ public class Session extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if(orientation == 1){
+            //Can go back
+        finish();
+        }else if(orientation == 2){
+            //Cant go back do nothing
+        }
+    }
 }
