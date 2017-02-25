@@ -7,8 +7,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -16,10 +22,15 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.example.semicolon.drishti.Adapter.SessionAdapter;
+import com.example.semicolon.drishti.Model.SessionData;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by semicolon on 2/25/2017.
@@ -36,7 +47,11 @@ public class Session extends AppCompatActivity {
 
     //boolean to check if it is safe to click an image
     private boolean safeToTakePicture = false;
-
+    private Toolbar toolbar;
+    private RecyclerView recyclerView;
+    long initialCount;
+    private SessionAdapter sessionAdapter;
+    private List<SessionData> sessionDataList = new ArrayList<SessionData>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +66,31 @@ public class Session extends AppCompatActivity {
 
         if (orientation == 1) {
             //Handle Portrait views here
+
+            toolbar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbar object
+            setSupportActionBar(toolbar);
+
+
+            recyclerView = (RecyclerView) findViewById(R.id.image_rv);
+
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
+            initialCount = SessionData.count(SessionData.class);
+            if (initialCount >= 0) {
+
+                sessionDataList = SessionData.listAll(SessionData.class);
+
+
+                sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
+                recyclerView.setAdapter(sessionAdapter);
+
+                if (sessionDataList.isEmpty())
+                    Snackbar.make(recyclerView, "No Sessions .", Snackbar.LENGTH_LONG).show();
+
+            }
+
 
         } else if (orientation == 2) {
             //Handle Landscape views here
@@ -76,6 +116,11 @@ public class Session extends AppCompatActivity {
 
         } else {
             //Fallback to Portrait?
+
+
+
+
+
         }
 
 
