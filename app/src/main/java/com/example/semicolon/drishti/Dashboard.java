@@ -5,10 +5,14 @@ import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import static android.R.attr.value;
 
 public class Dashboard extends AppCompatActivity {
+
+    public static final String TAG = "Dashboard";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,19 +21,22 @@ public class Dashboard extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
+        int orientation = getResources().getConfiguration().orientation;
 
-        // Checks the orientation of the screen
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (orientation == 1) {
+            //Handle Portrait views here
+            Log.d(TAG, "ORIENTATION_PORTRAIT");
+
+        } else if (orientation == 2) {
+            //Handle Landscape views here
+            Log.d(TAG, "ORIENTATION_LANDSCAPE");
+
             Intent myIntent = new Intent(Dashboard.this, Session.class);
             myIntent.putExtra("key", value); //Optional parameters
             Dashboard.this.startActivity(myIntent);
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-
         }
+
     }
+
 }
