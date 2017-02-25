@@ -25,6 +25,11 @@ import android.widget.Toast;
 
 import com.example.semicolon.drishti.Adapter.SessionAdapter;
 import com.example.semicolon.drishti.Model.SessionData;
+import com.example.semicolon.drishti.bus.MessageEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,6 +37,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 /**
  * Created by semicolon on 2/25/2017.
@@ -67,7 +74,7 @@ public class Session extends AppCompatActivity {
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
 
 
-         orientation = getResources().getConfiguration().orientation;
+        orientation = getResources().getConfiguration().orientation;
 
         if (orientation == 1) {
             //Handle Portrait views here
@@ -80,21 +87,47 @@ public class Session extends AppCompatActivity {
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(linearLayoutManager);
-            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.setItemAnimator(new SlideInLeftAnimator());
+
             recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
+
             initialCount = SessionData.count(SessionData.class);
+
+            //Sugar orm
             if (initialCount >= 0) {
 
                 sessionDataList = SessionData.listAll(SessionData.class);
-
 
                 sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
                 recyclerView.setAdapter(sessionAdapter);
 
                 if (sessionDataList.isEmpty())
-                    Snackbar.make(recyclerView, "No Sessions .", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(recyclerView, "No notes added.", Snackbar.LENGTH_LONG).show();
 
             }
+
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //Do something after 20 seconds
+
+                    //do something
+                    long newcount = SessionData.count(SessionData.class);
+                    if (newcount > initialCount) {
+
+                        sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA ORDER BY milliseconds DESC", null);
+
+                        sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
+                        recyclerView.setAdapter(sessionAdapter);
+                        initialCount = newcount;
+
+                    }
+
+                    handler.postDelayed(this, 500);
+                }
+            }, 500);  //the time is in miliseconds
 
 
         } else if (orientation == 2) {
@@ -111,7 +144,6 @@ public class Session extends AppCompatActivity {
             mCamera.setParameters(params);
 
 
-
             preview.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -123,9 +155,6 @@ public class Session extends AppCompatActivity {
 
         } else {
             //Fallback to Portrait?
-
-
-
 
 
         }
@@ -149,13 +178,12 @@ public class Session extends AppCompatActivity {
 
         @Override
         public boolean onDoubleTap(MotionEvent event) {
-            if(safeToTakePicture) {
+            if (safeToTakePicture) {
                 safeToTakePicture = false;
                 Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
                 mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
 
-            }
-            else{
+            } else {
                 Toast.makeText(getApplicationContext(), "Please try again!", Toast.LENGTH_LONG).show();
             }
 
@@ -181,7 +209,7 @@ public class Session extends AppCompatActivity {
                 new SaveImageTask().execute(data);
                 resetCam();
                 Log.d(TAG, "onPictureTaken - jpeg");
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -262,11 +290,41 @@ public class Session extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(orientation == 1){
+        if (orientation == 1) {
             //Can go back
-        finish();
-        }else if(orientation == 2){
+            finish();
+        } else if (orientation == 2) {
             //Cant go back do nothing
         }
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN )
+    public void onMessageEvent(MessageEvent event) {
+
+//
+//        SessionData sessionData = SessionData.findById(SessionData.class, event.getDbID());
+//        Log.d(TAG, "Query resut : " + sessionData.getResult());
+//
+//        sessionDataList.add(0, sessionData);
+////        sessionAdapter.addItemsToList(sessionData);
+//
+//
+//        long dbcount = SessionData.count(SessionData.class);
+//        Log.d(TAG, "onMessageEvent Receive. DB count : " + dbcount);
+    }
+
 }
