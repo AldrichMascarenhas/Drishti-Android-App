@@ -24,15 +24,15 @@ public class TimeLineViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         name = (TextView) itemView.findViewById(R.id.tv_name);
         date = (TextView) itemView.findViewById(R.id.tv_date);
-        imageView = (ImageView) itemView.findViewById(R.id.image_letter);
+        /*imageView = (ImageView) itemView.findViewById(R.id.image_letter);*/
 
         ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT
         // generate random color
         int color1 = generator.getRandomColor();
 
-        TextDrawable drawable = TextDrawable.builder()
+       /* TextDrawable drawable = TextDrawable.builder()
                 .buildRound("A", color1);
-        imageView.setImageDrawable(drawable);
+        imageView.setImageDrawable(drawable);*/
 
 
         mTimelineView = (TimelineView) itemView.findViewById(R.id.time_marker);
