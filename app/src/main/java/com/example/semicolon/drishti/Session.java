@@ -22,6 +22,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -441,6 +442,12 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 //
 //        long dbcount = SessionData.count(SessionData.class);
 //        Log.d(TAG, "onMessageEvent Receive. DB count : " + dbcount);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
     @Override
