@@ -30,8 +30,16 @@ import android.widget.Toast;
 
 import com.example.semicolon.drishti.Adapter.SessionAdapter;
 import com.example.semicolon.drishti.Model.SessionData;
+
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
+
+import com.example.semicolon.drishti.bus.MessageEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,6 +48,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 /**
  * Created by semicolon on 2/25/2017.
@@ -77,10 +87,10 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 
         FirebaseApp.initializeApp(this);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
-        tts = new TextToSpeech(this,this);
+        tts = new TextToSpeech(this, this);
 
 
-         orientation = getResources().getConfiguration().orientation;
+        orientation = getResources().getConfiguration().orientation;
 
         if (orientation == 1) {
             //Handle Portrait views here
@@ -90,38 +100,63 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
             toolbar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbar object
             setSupportActionBar(toolbar);
 
-            mic = (ImageView)findViewById(R.id.mic);
+            mic = (ImageView) findViewById(R.id.mic);
             recyclerView = (RecyclerView) findViewById(R.id.image_rv);
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(linearLayoutManager);
-            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.setItemAnimator(new SlideInLeftAnimator());
+
             recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
+
             initialCount = SessionData.count(SessionData.class);
 
 
             mic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-Utteranceid = "speech";
-                    tts.speak("Do You Want to Start A Session",TextToSpeech.QUEUE_FLUSH,null,Utteranceid);
+                    Utteranceid = "speech";
+                    tts.speak("Do You Want to Start A Session", TextToSpeech.QUEUE_FLUSH, null, Utteranceid);
                 }
             });
 
 
+            //Sugar orm
 
             if (initialCount >= 0) {
 
                 sessionDataList = SessionData.listAll(SessionData.class);
 
-
                 sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
                 recyclerView.setAdapter(sessionAdapter);
 
                 if (sessionDataList.isEmpty())
-                    Snackbar.make(recyclerView, "No Sessions .", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(recyclerView, "No notes added.", Snackbar.LENGTH_LONG).show();
 
             }
+
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //Do something after 20 seconds
+
+                    //do something
+                    long newcount = SessionData.count(SessionData.class);
+                    if (newcount > initialCount) {
+
+                        sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA ORDER BY milliseconds DESC", null);
+
+                        sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
+                        recyclerView.setAdapter(sessionAdapter);
+                        initialCount = newcount;
+
+                    }
+
+                    handler.postDelayed(this, 500);
+                }
+            }, 500);  //the time is in miliseconds
 
 
         } else if (orientation == 2) {
@@ -138,7 +173,6 @@ Utteranceid = "speech";
             mCamera.setParameters(params);
 
 
-
             preview.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -150,9 +184,6 @@ Utteranceid = "speech";
 
         } else {
             //Fallback to Portrait?
-
-
-
 
 
         }
@@ -185,9 +216,9 @@ Utteranceid = "speech";
 
                 @Override
                 public void onDone(String utteranceId) {
-if(utteranceId.equals("speech"));
+                    if (utteranceId.equals("speech")) ;
                     {
-promptSpeechInput();
+                        promptSpeechInput();
                     }
                 }
 
@@ -216,13 +247,12 @@ promptSpeechInput();
 
         @Override
         public boolean onDoubleTap(MotionEvent event) {
-            if(safeToTakePicture) {
+            if (safeToTakePicture) {
                 safeToTakePicture = false;
                 Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
                 mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
 
-            }
-            else{
+            } else {
                 Toast.makeText(getApplicationContext(), "Please try again!", Toast.LENGTH_LONG).show();
             }
 
@@ -248,7 +278,7 @@ promptSpeechInput();
                 new SaveImageTask().execute(data);
                 resetCam();
                 Log.d(TAG, "onPictureTaken - jpeg");
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -329,10 +359,10 @@ promptSpeechInput();
 
     @Override
     public void onBackPressed() {
-        if(orientation == 1){
+        if (orientation == 1) {
             //Can go back
-        finish();
-        }else if(orientation == 2){
+            finish();
+        } else if (orientation == 2) {
             //Cant go back do nothing
         }
     }
@@ -345,11 +375,11 @@ promptSpeechInput();
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
                 "Say Something");
-        intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS,1);
+        intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 1);
         try {
             startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
         } catch (ActivityNotFoundException a) {
-            Toast.makeText(getApplicationContext(),"Not Supported",
+            Toast.makeText(getApplicationContext(), "Not Supported",
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -364,11 +394,9 @@ promptSpeechInput();
 
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    if(result.get(0).contains("yes"))
-                    {
-                        startActivity(new Intent(Session.this,OngoingSession.class));
-                    }
-                    else {
+                    if (result.get(0).contains("yes")) {
+                        startActivity(new Intent(Session.this, OngoingSession.class));
+                    } else {
 
                     }
 
@@ -378,4 +406,36 @@ promptSpeechInput();
 
         }
     }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+
+//
+//        SessionData sessionData = SessionData.findById(SessionData.class, event.getDbID());
+//        Log.d(TAG, "Query resut : " + sessionData.getResult());
+//
+//        sessionDataList.add(0, sessionData);
+////        sessionAdapter.addItemsToList(sessionData);
+//
+//
+//        long dbcount = SessionData.count(SessionData.class);
+//        Log.d(TAG, "onMessageEvent Receive. DB count : " + dbcount);
+    }
+
+
 }

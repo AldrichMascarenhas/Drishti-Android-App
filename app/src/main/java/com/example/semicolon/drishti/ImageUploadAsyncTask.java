@@ -3,12 +3,16 @@ package com.example.semicolon.drishti;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.semicolon.drishti.Model.SessionData;
+import com.example.semicolon.drishti.bus.MessageEvent;
+
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -21,31 +25,46 @@ import okhttp3.Response;
  * Created by semicolon on 2/25/2017.
  */
 
-public class ImageUploadAsyncTask extends AsyncTask<File, String, String> {
+public class ImageUploadAsyncTask extends AsyncTask<File, String, Long> {
 
     public static final String TAG = "ImageUploadAsyncTask";
 
-    private final OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build();
+
+
 
     Response response;
     RequestBody requestBody;
     Request request;
-    private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
+    private static final MediaType MEDIA_TYPE_JPG = MediaType.parse("image/jpg");
+
+    Long databaseID;
 
 
     @Override
-    protected String doInBackground(File... files) {
+    protected void onPreExecute() {
+        super.onPreExecute();
+    }
+
+    @Override
+    protected Long doInBackground(File... files) {
 
         File file = files[0];
 
+
+
         requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("photo", file.getName(),
-                        RequestBody.create(MEDIA_TYPE_PNG, file))
+                .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
+                .addFormDataPart("image_id", file.getName())
                 .build();
 
         request = new Request.Builder()
-                .url("http://10.244.25.41:3000/api/v2/first-level")
+                .url(CONFIG.ACTUAL_HOST + "upload")
                 .post(requestBody)
                 .build();
 
@@ -55,8 +74,29 @@ public class ImageUploadAsyncTask extends AsyncTask<File, String, String> {
                 throw new IOException("Unexpected code " + response);
             }
 
-            Log.d(TAG, response.toString());
-            Log.d(TAG, response.body().string());
+            else{
+
+                try {
+                    String jsonData = response.body().string();
+                    JSONObject Jobject = new JSONObject(jsonData);
+                    Log.d(TAG, jsonData);
+
+
+
+                    long unixTime = System.currentTimeMillis();
+                    Log.d(TAG, "Linux time : " + unixTime);
+
+                    SessionData sessionData = new SessionData(Jobject.getString("image_id"),Jobject.getString("result"), file.getAbsolutePath(), unixTime);
+                    sessionData.save();
+
+                    databaseID = sessionData.getId();
+                    Log.d(TAG, "databse id : " + databaseID);
+
+
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
 
 
         } catch (IOException e) {
@@ -64,18 +104,19 @@ public class ImageUploadAsyncTask extends AsyncTask<File, String, String> {
         }
 
 
-        return null;
+        return databaseID;
     }
 
     @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
+    protected void onPostExecute(Long dbID) {
+        super.onPostExecute(dbID);
+
+
+
+        EventBus.getDefault().post(new MessageEvent(dbID));
+
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
 
     public ImageUploadAsyncTask() {
         super();
