@@ -44,7 +44,7 @@ import static android.R.attr.orientation;
  */
 
 public class OngoingSession extends AppCompatActivity {
-Handler handler;
+    Handler handler;
     Toolbar toggletoolbar;
     private RecyclerView recyclerView;
     public static final String TAG = "OnGoingSessionActivity";
@@ -58,12 +58,14 @@ Handler handler;
     long initialCount;
     private boolean safeToTakePicture = true;
     int count = 0;
-    private  int SESSION_ID;
+    private int SESSION_ID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ongoingsession);
-      SESSION_ID =  getIntent().getIntExtra("SESSION_ID_KEY",0);
+        SESSION_ID = getIntent().getIntExtra("SESSION_ID_KEY", 0);
+        Log.d("SESSION_ID_KEY", "SESSION_ID IS  : " + SESSION_ID + " IN OngoingSession");
 
         toggletoolbar = (Toolbar) findViewById(R.id.toggletoolbar);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
@@ -90,52 +92,49 @@ Handler handler;
         if (orientation == 1) {
 
 
+            recyclerView = (RecyclerView) findViewById(R.id.ongoingsession_rv);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.setItemAnimator(new SlideInLeftAnimator());
+            recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
 
-                recyclerView = (RecyclerView) findViewById(R.id.ongoingsession_rv);
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-                recyclerView.setLayoutManager(linearLayoutManager);
-                recyclerView.setItemAnimator(new SlideInLeftAnimator());
-                recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
+            initialCount = OnGoingSessionData.count(OnGoingSessionData.class);
 
-                initialCount = OnGoingSessionData.count(OnGoingSessionData.class);
+            if (initialCount >= 0) {
 
-                if (initialCount >= 0) {
+                onGoingSessionDataList = OnGoingSessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA ORDER BY milliseconds DESC", null);
 
-                    onGoingSessionDataList = OnGoingSessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA ORDER BY milliseconds DESC", null);
+                onGoingSessionAdapter = new OnGoingSessionAdapter(OngoingSession.this, onGoingSessionDataList);
+                recyclerView.setAdapter(onGoingSessionAdapter);
 
-                    onGoingSessionAdapter = new OnGoingSessionAdapter(OngoingSession.this, onGoingSessionDataList);
-                    recyclerView.setAdapter(onGoingSessionAdapter);
-
-                    if (onGoingSessionDataList.isEmpty())
-                        Snackbar.make(recyclerView, "No notes added.", Snackbar.LENGTH_LONG).show();
-
-                }
-
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        //Do something after 20 seconds
-
-                        //do something
-                        long newcount = OnGoingSessionData.count(OnGoingSessionData.class);
-                        if (newcount > initialCount) {
-
-                            onGoingSessionDataList = OnGoingSessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA ORDER BY milliseconds DESC", null);
-
-                            onGoingSessionAdapter = new OnGoingSessionAdapter(OngoingSession.this, onGoingSessionDataList);
-                            recyclerView.setAdapter(onGoingSessionAdapter);
-                            initialCount = newcount;
-
-                        }
-
-                        handler.postDelayed(this, 500);
-                    }
-                }, 500);
+                if (onGoingSessionDataList.isEmpty())
+                    Snackbar.make(recyclerView, "No notes added.", Snackbar.LENGTH_LONG).show();
 
             }
-        else if (orientation == 2)
-        {
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //Do something after 20 seconds
+
+                    //do something
+                    long newcount = OnGoingSessionData.count(OnGoingSessionData.class);
+                    if (newcount > initialCount) {
+
+                        onGoingSessionDataList = OnGoingSessionData.findWithQuery(OnGoingSessionData.class, "SELECT * FROM ON_GOING_SESSION_DATA ORDER BY milliseconds DESC", null);
+
+                        onGoingSessionAdapter = new OnGoingSessionAdapter(OngoingSession.this, onGoingSessionDataList);
+                        recyclerView.setAdapter(onGoingSessionAdapter);
+                        initialCount = newcount;
+
+                    }
+
+                    handler.postDelayed(this, 500);
+                }
+            }, 500);
+
+        } else if (orientation == 2) {
             mCamera = getCameraInstance();
             mPreview = new CameraPreview(this, mCamera);
             preview = (FrameLayout) findViewById(R.id.camera_preview);
@@ -284,7 +283,7 @@ Handler handler;
             }, 1000);
 
             //TODO: Change to File if needed
-            ImageUploadAsyncTaskOngoing imageUploadAsyncTaskOngoing = new ImageUploadAsyncTaskOngoing( outFile.getAbsoluteFile(),SESSION_ID);
+            ImageUploadAsyncTaskOngoing imageUploadAsyncTaskOngoing = new ImageUploadAsyncTaskOngoing(outFile.getAbsoluteFile(), SESSION_ID);
             imageUploadAsyncTaskOngoing.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
@@ -302,15 +301,7 @@ Handler handler;
     }
 
 
-
-
-
-
-
-
-
-
-    }
+}
 
 
 

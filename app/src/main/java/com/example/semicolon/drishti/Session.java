@@ -82,10 +82,8 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
     int orientation;
     private String Utteranceid;
 
-    //SESSION ID
-    int SESSION_ID;
-    Random rand = new Random();
 
+    ApplicationClass applicationClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,9 +94,10 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
         FirebaseMessaging.getInstance().subscribeToTopic("sceneData");
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
         tts = new TextToSpeech(this, this);
+        applicationClass = (ApplicationClass) getApplicationContext();
 
-        SESSION_ID = rand.nextInt(297322) + 1;
 
+            Log.d("SESSION_ID_KEY", "SESSION_ID IS  : " + applicationClass.getSESSION_ID() + " IN Session");
 
 
         orientation = getResources().getConfiguration().orientation;
@@ -125,7 +124,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
             mic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                        promptSpeechInput();
+                    promptSpeechInput();
                 }
             });
 
@@ -353,7 +352,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
             }, 1000);
 
             //TODO: Change to File if needed
-            ImageUploadAsyncTask imageUploadAsyncTask = new ImageUploadAsyncTask(SESSION_ID, outFile.getAbsoluteFile());
+            ImageUploadAsyncTask imageUploadAsyncTask = new ImageUploadAsyncTask(applicationClass.getSESSION_ID(), outFile.getAbsoluteFile());
             imageUploadAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
@@ -400,7 +399,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                     if (result.get(0).contains("yes")) {
 
                         Intent intent = new Intent(Session.this, OngoingSession.class);
-                        intent.putExtra("SESSION_ID_KEY", SESSION_ID);
+                        intent.putExtra("SESSION_ID_KEY", applicationClass.getSESSION_ID());
                         startActivity(intent);
 
                     } else {

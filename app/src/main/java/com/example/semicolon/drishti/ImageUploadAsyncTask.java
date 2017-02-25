@@ -83,8 +83,6 @@ public class ImageUploadAsyncTask extends AsyncTask<Void, String, Long> {
                     JSONObject Jobject = new JSONObject(jsonData);
                     Log.d(TAG, jsonData);
 
-
-
                     long unixTime = System.currentTimeMillis();
                     Log.d(TAG, "Linux time : " + unixTime);
 
