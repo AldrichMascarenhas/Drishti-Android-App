@@ -34,6 +34,9 @@ public class Session extends AppCompatActivity {
     private GestureDetectorCompat mDetector;
     ImageView camera_image_preview;
 
+    //boolean to check if it is safe to click an image
+    private boolean safeToTakePicture = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,9 +117,13 @@ public class Session extends AppCompatActivity {
 
     Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
-            new SaveImageTask().execute(data);
-            resetCam();
-            Log.d(TAG, "onPictureTaken - jpeg");
+            try {
+                new SaveImageTask().execute(data);
+                resetCam();
+                Log.d(TAG, "onPictureTaken - jpeg");
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         }
     };
 
