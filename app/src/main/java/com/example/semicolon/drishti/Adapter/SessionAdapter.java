@@ -21,7 +21,6 @@ import java.util.List;
  */
 
 public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionViewHolder> {
-    OnItemClickListener clickListener;
     Context context;
     List<SessionData> sessionDataList;
     RecyclerView recyclerView;
@@ -59,7 +58,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionV
         return sessionDataList.size();
     }
 
-    class SessionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class SessionViewHolder extends RecyclerView.ViewHolder {
         TextView info_textview;
         ImageView imageView;
 
@@ -69,28 +68,12 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionV
             info_textview = (TextView) itemView.findViewById(R.id.info_textview);
             imageView = (ImageView) itemView.findViewById(R.id.coverImageView);
 
-            itemView.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View v) {
-            clickListener.onItemClick(v, getAdapterPosition());
-        }
-    }
-
-    public interface OnItemClickListener {
-        public void onItemClick(View view, int position);
-    }
-
-    public void SetOnItemClickListener(final OnItemClickListener itemClickListener) {
-        this.clickListener = itemClickListener;
-    }
-
-    public void addItemsToList(SessionData sessionData) {
-        sessionDataList.add(0, sessionData);
-        notifyDataSetChanged();
-
 
     }
+
+
+
 }
 

@@ -26,6 +26,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.semicolon.drishti.Adapter.SessionAdapter;
@@ -86,6 +87,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
         setContentView(R.layout.activity_session);
 
         FirebaseApp.initializeApp(this);
+        FirebaseMessaging.getInstance().subscribeToTopic("sceneData");
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
         tts = new TextToSpeech(this, this);
 
@@ -94,8 +96,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 
         if (orientation == 1) {
             //Handle Portrait views here
-            FirebaseApp.initializeApp(this);
-            FirebaseMessaging.getInstance().subscribeToTopic("sceneData");
+
 
             toolbar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbar object
             setSupportActionBar(toolbar);
@@ -157,6 +158,19 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                     handler.postDelayed(this, 500);
                 }
             }, 500);  //the time is in miliseconds
+
+
+            recyclerView.addOnItemTouchListener(
+                    new SessionRecylerItemClickListener(getApplicationContext(), new SessionRecylerItemClickListener.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(View view, int position) {
+                            TextView name = (TextView) view.findViewById(R.id.info_textview);
+
+                            Utteranceid = this.hashCode() + "";
+                            tts.speak(name.getText().toString(), TextToSpeech.QUEUE_FLUSH, null, Utteranceid);
+                        }
+                    })
+            );
 
 
         } else if (orientation == 2) {
@@ -440,11 +454,14 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(tts!=null) {
+        if (tts != null) {
             tts.stop();
             tts.shutdown();
         }
     }
+
+
+    //TTS TO READ CARD ITEM
 
 
 }
