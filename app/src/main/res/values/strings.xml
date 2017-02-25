@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Drishti</string>
+    <string name="rotate_message">Rotate Phone to Start Capture</string>
 </resources>
