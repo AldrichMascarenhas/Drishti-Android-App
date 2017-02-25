@@ -147,9 +147,9 @@ public class OngoingSession extends AppCompatActivity {
 
                     }
 
-                    handler.postDelayed(this, 500);
+                    handler.postDelayed(this, 1);
                 }
-            }, 500);
+            }, 1);
 
         } else if (orientation == 2) {
             mCamera = getCameraInstance();

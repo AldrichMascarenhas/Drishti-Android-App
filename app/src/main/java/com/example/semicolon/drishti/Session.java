@@ -186,7 +186,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                             TextView name = (TextView) view.findViewById(R.id.info_textview);
 
                             Utteranceid = this.hashCode() + "";
-                            tts.speak(name.getText().toString(), TextToSpeech.QUEUE_FLUSH, null, Utteranceid);
+                            tts.speak(name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
                         }
                     })
             );
