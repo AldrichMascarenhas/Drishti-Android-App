@@ -1,39 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:elevation="1dp"
-    android:background="@color/white"
-    android:orientation="vertical">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
-
-        <LinearLayout
+        <android.support.v7.widget.CardView android:id="@+id/card_view"
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="left|bottom"
-            android:background="@android:drawable/screen_background_dark_transparent"
-            android:orientation="vertical">
+            card_view:cardCornerRadius="5dp"
+            card_view:cardElevation="3dp"
+            android:layout_marginBottom="5dp"
+            xmlns:android="http://schemas.android.com/apk/res/android">
 
-            <ImageView
-                android:id="@+id/coverImageView"
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_gravity="center"
-                android:scaleType="centerCrop"
-                />
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|bottom"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/info_textview"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:padding="16dp"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </FrameLayout>
+                <ImageView
+                    android:id="@+id/coverImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    />
 
-</LinearLayout>
+                <TextView
+                    android:id="@+id/info_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:padding="8dp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:background="@color/black"
+                    android:gravity="center"
+                    android:alpha="0.70"
+                    android:textSize="20sp"
+                    android:text="Sample Text"/>
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
