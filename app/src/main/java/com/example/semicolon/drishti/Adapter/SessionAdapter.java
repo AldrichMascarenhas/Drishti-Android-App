@@ -77,6 +77,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionV
     public void add(SessionData sessionData) {
         sessionDataList.add(0, sessionData);
         notifyItemInserted(0);
+        notifyDataSetChanged();
     }
 
 

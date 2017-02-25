@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 /**
@@ -118,8 +119,8 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(linearLayoutManager);
-            recyclerView.setItemAnimator(new SlideInLeftAnimator());
-            recyclerView.getItemAnimator().setAddDuration(1000);
+            recyclerView.setItemAnimator(new ScaleInAnimator());
+
 
             recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
 
@@ -138,7 +139,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 
             if (initialCount >= 0) {
 
-                sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA ORDER BY milliseconds DESC", null);
+                sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA WHERE SESSIONID = ? ORDER BY milliseconds DESC",Integer.toString(applicationClass.getSESSION_ID()));
 
                 sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
                 recyclerView.setAdapter(sessionAdapter);
@@ -159,21 +160,23 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                     long newcount = SessionData.count(SessionData.class);
                     if (newcount > initialCount) {
 
-                        newSessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA ORDER BY milliseconds DESC", null);
+                        newSessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA WHERE SESSIONID = ? ORDER BY milliseconds DESC",Integer.toString(applicationClass.getSESSION_ID()));
 
                         Log.d("NEWLIST", "Updated List with size : " + newSessionDataList.size());
                         Log.d("NEWLIST", "Old List size : " + sessionDataList.size());
 
-                        sessionAdapter = new SessionAdapter(Session.this, newSessionDataList);
-                        recyclerView.setAdapter(sessionAdapter);
+
+                        if(!newSessionDataList.isEmpty()){
+                            sessionAdapter.add(newSessionDataList.get(0));
+                        }
                         recyclerView.smoothScrollToPosition(0);
                         initialCount = newcount;
 
                     }
 
-                    handler.postDelayed(this, 500);
+                    handler.postDelayed(this, 1);
                 }
-            }, 500);  //the time is in miliseconds
+            }, 1);  //the time is in miliseconds
 
 
             recyclerView.addOnItemTouchListener(
