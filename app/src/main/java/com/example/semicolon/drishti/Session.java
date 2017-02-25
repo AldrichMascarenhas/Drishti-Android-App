@@ -125,7 +125,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 
             if (initialCount >= 0) {
 
-                sessionDataList = SessionData.listAll(SessionData.class);
+                sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA ORDER BY milliseconds DESC", null);
 
                 sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
                 recyclerView.setAdapter(sessionAdapter);
@@ -435,6 +435,15 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 //
 //        long dbcount = SessionData.count(SessionData.class);
 //        Log.d(TAG, "onMessageEvent Receive. DB count : " + dbcount);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(tts!=null) {
+            tts.stop();
+            tts.shutdown();
+        }
     }
 
 

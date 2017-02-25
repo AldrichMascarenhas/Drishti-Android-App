@@ -74,4 +74,13 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
             Log.e("TTS", "Initilization Failed!");
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(tts!=null) {
+            tts.stop();
+            tts.shutdown();
+        }
+    }
 }
