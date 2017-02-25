@@ -27,14 +27,13 @@
                 <TextView
                     android:id="@+id/info_textview"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="wrap_content"
                     android:padding="8dp"
                     android:textColor="@color/white"
-                    android:textStyle="bold"
                     android:background="@color/black"
                     android:gravity="center"
                     android:alpha="0.70"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:text="Sample Text"/>
             </LinearLayout>
 
