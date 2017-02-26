@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.example.semicolon.drishti.Model.Sessions;
 
 import java.util.List;
@@ -43,6 +45,15 @@ public class TimeLineAdapter extends RecyclerView.Adapter<TimeLineViewHolder> {
 
         holder.name.setText( ""+ sessionModel.getName());
         holder.date.setText("Date :"+ sessionModel.getDate());
+        holder.location.setText(sessionModel.getLocation());
+
+        ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT
+        // generate random color
+        int color1 = generator.getRandomColor();
+
+        TextDrawable drawable = TextDrawable.builder()
+                .buildRound(holder.name.getText().toString().substring(0,1), color1);
+        holder.imageView.setImageDrawable(drawable);
     }
 
     @Override

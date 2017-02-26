@@ -2,6 +2,7 @@ package com.example.semicolon.drishti;
 
 import android.app.Application;
 
+import com.google.firebase.FirebaseApp;
 import com.orm.SugarApp;
 import com.orm.SugarContext;
 
@@ -16,6 +17,9 @@ public class ApplicationClass extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        FirebaseApp.initializeApp(this);
+
         SugarContext.init(this);
     }
 

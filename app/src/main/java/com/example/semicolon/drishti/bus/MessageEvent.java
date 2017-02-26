@@ -6,17 +6,17 @@ package com.example.semicolon.drishti.bus;
 
 public class MessageEvent {
 
-    long dbID;
+    String summaryData;
 
-    public MessageEvent(long dbID) {
-        this.dbID = dbID;
+    public MessageEvent(String summaryData) {
+        this.summaryData = summaryData;
     }
 
-    public long getDbID() {
-        return dbID;
+    public String getSummaryData() {
+        return summaryData;
     }
 
-    public void setDbID(long dbID) {
-        this.dbID = dbID;
+    public void setSummaryData(String summaryData) {
+        this.summaryData = summaryData;
     }
 }

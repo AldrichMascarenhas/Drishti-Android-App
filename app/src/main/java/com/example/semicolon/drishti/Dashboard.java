@@ -15,6 +15,8 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.semicolon.drishti.Model.LoadDataIntoDatabaseAsyncTask;
+import com.example.semicolon.drishti.Model.OnGoingSessionData;
+import com.example.semicolon.drishti.Model.SessionData;
 import com.example.semicolon.drishti.Model.Sessions;
 
 import java.util.List;
@@ -32,12 +34,16 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
     private TimeLineAdapter mTimeLineAdapter;
 
     long initialCount;
+
+    List<Sessions> books;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Timeline");
         tts = new TextToSpeech(this,this);
 
         header = (RelativeLayout)findViewById(R.id.header);
@@ -68,8 +74,9 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
 
         }else{
 
-            Toast.makeText(getApplicationContext(), "Count " + initialCount, Toast.LENGTH_LONG).show();
-            List<Sessions> books = Sessions.listAll(Sessions.class);
+
+            books = Sessions.findWithQuery(Sessions.class, "SELECT * FROM SESSIONS ORDER BY ID DESC");
+
             mTimeLineAdapter = new TimeLineAdapter(books, this);
             TimelineRecylerView.setAdapter(mTimeLineAdapter);
 
@@ -77,11 +84,26 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
 
         }
 
+
+        TimelineRecylerView.addOnItemTouchListener(new SessionRecylerItemClickListener(getApplicationContext(), new SessionRecylerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                int sessionID = books.get(position).getRandomID();
+
+                Intent i = new Intent(Dashboard.this, SessionDetail.class);
+                i.putExtra("SESSION_ID_KEY", sessionID);
+                startActivity(i);
+            }
+        }));
+
         int orientation = getResources().getConfiguration().orientation;
 
         if (orientation == 1) {
             //Handle Portrait views here
             Log.d(TAG, "ORIENTATION_PORTRAIT");
+
+
+
 
         } else if (orientation == 2) {
             //Handle Landscape views here
