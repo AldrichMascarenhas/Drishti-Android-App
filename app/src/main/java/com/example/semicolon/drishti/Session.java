@@ -177,22 +177,28 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                     if (newcount > initialCount) {
 
                         sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA WHERE SESSIONID = ? ORDER BY milliseconds DESC", Integer.toString(applicationClass.getSESSION_ID()));
-                        changeofdata = false;
+                        Log.d("abc","abc");
                         sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
                         recyclerView.setAdapter(sessionAdapter);
                         initialCount = newcount;
 
                     }
+if(changeofdata) {
+    update();
+}
 
-                    if (changeofdata == true && clickcount == sharedpreferences.getInt("imagecount", 0)) {
+                    Log.d("count",String.valueOf(count));
 
+                   /* if (changeofdata == true && count == 1) {
+                        count++;
 
+                        Log.d("xyz","xyz");
                         tts.speak("We have More Details Updating Info ", TextToSpeech.QUEUE_ADD, null, "hello");
                         SharedPreferences.Editor editor = sharedpreferences.edit();
                         editor.putInt("imagecount", 0);
                         editor.commit();
 
-                    }
+                    }*/
 
 
                     handler.postDelayed(this, 1);
@@ -207,7 +213,24 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                             TextView name = (TextView) view.findViewById(R.id.info_textview);
                             clickcount++;
                             Utteranceid = this.hashCode() + "";
-                            tts.speak(name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+                            if(position==0)
+                            {
+                                tts.speak("On your Right  "+name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+                            }
+                            else if(position == 1)
+                            {
+                                tts.speak("To your Centre  "+name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+                            }
+                            else if (position == 2) {
+                                tts.speak("On your Left  "+name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+                            }
+                            else {
+                                tts.speak(name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+                            }
+
+
                         }
                     })
             );
@@ -274,6 +297,15 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                     String tag = " ";
                     count++;
 
+                    if(count == 1)
+                    {
+                        tts.speak("We have New Data for You",TextToSpeech.QUEUE_ADD,null,"hello");
+
+
+                    }
+
+
+
                     try {
                         JSONObject Jobject = new JSONObject(jsonData);
                         image_id = Jobject.getString("image_id");
@@ -281,7 +313,8 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                         tag = Jobject.getString("tag");
 
                         if (tag.equals("faces")) {
-                            Toast.makeText(Session.this, Jobject.getString("result"), Toast.LENGTH_LONG).show();
+                           // Toast.makeText(Session.this, Jobject.getString("result"), Toast.LENGTH_LONG).show();
+                            tts.speak(Jobject.getString("result"),TextToSpeech.QUEUE_ADD,null,"abc");
                             facescard.setVisibility(View.VISIBLE);
                             facetext.setText(Jobject.getString("result"));
                         } else {
@@ -292,11 +325,11 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                                 book.setResult(result); // modify the values
                                 book.save();
                                 Log.d("give", String.valueOf(sharedpreferences.getInt("imagecount", 0)));
-                                if (count == sharedpreferences.getInt("imagecount", 0)) {
+
                                     changeofdata = true;
 
 
-                                }
+
                             }
                         }
 
