@@ -176,17 +176,17 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                     if (newcount > initialCount) {
 
                         sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA WHERE SESSIONID = ? ORDER BY milliseconds DESC", Integer.toString(applicationClass.getSESSION_ID()));
-                        Log.d("abc","abc");
+                        Log.d("abc", "abc");
                         sessionAdapter = new SessionAdapter(Session.this, sessionDataList);
                         recyclerView.setAdapter(sessionAdapter);
                         initialCount = newcount;
 
                     }
-if(changeofdata) {
-    update();
-}
+                    if (changeofdata) {
+                        update();
+                    }
 
-                    Log.d("count",String.valueOf(count));
+                    Log.d("count", String.valueOf(count));
 
                    /* if (changeofdata == true && count == 1) {
                         count++;
@@ -212,19 +212,14 @@ if(changeofdata) {
                             TextView name = (TextView) view.findViewById(R.id.info_textview);
                             clickcount++;
                             Utteranceid = this.hashCode() + "";
-                            if(position==0)
-                            {
-                                tts.speak("On your Right  "+name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
-                            }
-                            else if(position == 1)
-                            {
-                                tts.speak("To your Centre  "+name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
-                            }
-                            else if (position == 2) {
-                                tts.speak("On your Left  "+name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+                            if (position == 0) {
+                                tts.speak("On your Right  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+                            } else if (position == 1) {
+                                tts.speak("To your Centre  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+                            } else if (position == 2) {
+                                tts.speak("On your Left  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
 
-                            }
-                            else {
+                            } else {
                                 tts.speak(name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
 
                             }
@@ -296,13 +291,11 @@ if(changeofdata) {
                     String tag = " ";
                     count++;
 
-                    if(count == 1)
-                    {
-                        tts.speak("We have New Data for You",TextToSpeech.QUEUE_ADD,null,"hello");
+                    if (count == 1) {
+                        tts.speak("We have New Data for You", TextToSpeech.QUEUE_ADD, null, "hello");
 
 
                     }
-
 
 
                     try {
@@ -312,8 +305,8 @@ if(changeofdata) {
                         tag = Jobject.getString("tag");
 
                         if (tag.equals("faces")) {
-                           // Toast.makeText(Session.this, Jobject.getString("result"), Toast.LENGTH_LONG).show();
-                            tts.speak(Jobject.getString("result"),TextToSpeech.QUEUE_ADD,null,"abc");
+                            // Toast.makeText(Session.this, Jobject.getString("result"), Toast.LENGTH_LONG).show();
+                            tts.speak(Jobject.getString("result"), TextToSpeech.QUEUE_ADD, null, "abc");
                             facescard.setVisibility(View.VISIBLE);
                             facetext.setText(Jobject.getString("result"));
                         } else {
@@ -325,8 +318,7 @@ if(changeofdata) {
                                 book.save();
                                 Log.d("give", String.valueOf(sharedpreferences.getInt("imagecount", 0)));
 
-                                    changeofdata = true;
-
+                                changeofdata = true;
 
 
                             }
@@ -575,10 +567,6 @@ if(changeofdata) {
 
         }
     }
-
-
-
-
 
 
     @Override
