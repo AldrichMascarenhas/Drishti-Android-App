@@ -213,11 +213,11 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                             clickcount++;
                             Utteranceid = this.hashCode() + "";
                             if (position == 0) {
-                                tts.speak("On your Right  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+                                tts.speak("To your Right  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
                             } else if (position == 1) {
-                                tts.speak("To your Centre  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+                                tts.speak("In front of you  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
                             } else if (position == 2) {
-                                tts.speak("On your Left  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+                                tts.speak("To your Left  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
 
                             } else {
                                 tts.speak(name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
@@ -309,6 +309,14 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                             tts.speak(Jobject.getString("result"), TextToSpeech.QUEUE_ADD, null, "abc");
                             facescard.setVisibility(View.VISIBLE);
                             facetext.setText(Jobject.getString("result"));
+
+                            facescard.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    tts.speak(facetext.getText(), TextToSpeech.QUEUE_ADD, null, "abc");
+
+                                }
+                            });
                         } else {
                             sessionDataList = SessionData.findWithQuery(SessionData.class, "SELECT * FROM SESSION_DATA WHERE imageid=?", image_id);
                             if (sessionDataList.size() != 0) {
