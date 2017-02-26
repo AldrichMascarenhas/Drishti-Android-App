@@ -73,7 +73,8 @@ import static android.R.attr.orientation;
  */
 
 public class OngoingSession extends AppCompatActivity implements SummaryAsyncTaskResponse, TextToSpeech.OnInitListener {
-    Handler handler;
+    Handler fhandler;
+    Runnable fr;
     Toolbar toggletoolbar;
     private RecyclerView recyclerView;
     public static final String TAG = "OnGoingSessionActivity";
@@ -156,6 +157,7 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
             mic = (ImageView) findViewById(R.id.mic_ogs);
 
 
+
             meeting_text = (TextView) findViewById(R.id.meeting_text);
             date_time = (TextView) findViewById(R.id.date_time);
             meeting_text.setText("Meeting " + date);
@@ -165,6 +167,28 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
 
 
             recyclerView = (RecyclerView) findViewById(R.id.ongoingsession_rv);
+
+
+            fhandler = new Handler();
+
+             fr = new Runnable() {
+                public void run() {
+
+                    fhandler.postDelayed(this, 1000);
+                    if (count % 2 == 0) {
+                        toggletoolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    } else {
+                        toggletoolbar.setBackgroundColor(getResources().getColor(R.color.facecardcolor));
+                    }
+
+                    count++;
+                }
+            };
+
+            fhandler.postDelayed(fr, 1000);
+
+
+
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(linearLayoutManager);
             recyclerView.setItemAnimator(new SlideInLeftAnimator());
