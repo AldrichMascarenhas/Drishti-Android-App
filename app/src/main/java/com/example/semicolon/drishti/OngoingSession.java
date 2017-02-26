@@ -13,7 +13,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -69,7 +72,7 @@ import static android.R.attr.orientation;
  * Created by semicolon on 2/25/2017.
  */
 
-public class OngoingSession extends AppCompatActivity implements SummaryAsyncTaskResponse{
+public class OngoingSession extends AppCompatActivity implements SummaryAsyncTaskResponse, TextToSpeech.OnInitListener {
     Handler handler;
     Toolbar toggletoolbar;
     private RecyclerView recyclerView;
@@ -93,8 +96,6 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
 
     TextView meeting_text, date_time;
 
-    //USE THIS FLAG TO SET THE SESSIONS OBJECT IN DB
-    boolean saveInDB = true;
 
     //OKHTTP
     OkHttpClient client = new OkHttpClient();
@@ -105,6 +106,20 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
     TextView summarytextview;
     CardView summarycard;
 
+    //TTS
+    private String Utteranceid;
+    private TextToSpeech tts;
+
+    //Vibrate
+    Vibrator vibe;
+
+
+    //
+    String RESPONSEDATA;
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,40 +128,22 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
         Log.d("SESSION_ID_KEY", "SESSION_ID IS  : " + SESSION_ID + " IN OngoingSession");
 
 
+        vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+
         registerReceiver(myReceiver, new IntentFilter(FireBaseMessagingService.INTENT_FILTER));
 
         FirebaseMessaging.getInstance().subscribeToTopic("sceneData");
+        tts = new TextToSpeech(this, this);
 
 
         toggletoolbar = (Toolbar) findViewById(R.id.toggletoolbar);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
 
-        handler = new Handler();
-
-        final Runnable r = new Runnable() {
-            public void run() {
-
-                handler.postDelayed(this, 1000);
-                if (count % 2 == 0) {
-                    toggletoolbar.setBackgroundColor(Color.BLACK);
-                } else {
-                    toggletoolbar.setBackgroundColor(Color.WHITE);
-                }
-
-                count++;
-            }
-        };
 
         DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
         String date = df.format(Calendar.getInstance().getTime());
 
-        if (saveInDB) {
-
-
-            Sessions session5 = new Sessions(date, "Meeting", SESSION_ID, "Persistent Systems Ltd, Verna");
-            session5.save();
-            saveInDB = false;
-        }
 
 
         orientation = getResources().getConfiguration().orientation;
@@ -208,6 +205,20 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
                     promptSpeechInput();
                 }
             });
+
+
+            recyclerView.addOnItemTouchListener(
+                    new SessionRecylerItemClickListener(getApplicationContext(), new SessionRecylerItemClickListener.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(View view, int position) {
+                            TextView name = (TextView) view.findViewById(R.id.info_textview);
+                            Utteranceid = this.hashCode() + "";
+                            tts.speak(name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+                        }
+                    })
+            );
+
+
 
         } else if (orientation == 2) {
             mCamera = getCameraInstance();
@@ -454,6 +465,8 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
 
                             onGoingSessionAdapter = new OnGoingSessionAdapter(OngoingSession.this, onGoingSessionDataList);
                             recyclerView.setAdapter(onGoingSessionAdapter);
+                            vibe.vibrate(100);
+
 
                         }
 
@@ -471,11 +484,72 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
 
     @Override
     public void processFinish(String output) {
-
+        RESPONSEDATA = output;
         summarycard.setVisibility(View.VISIBLE);
-        summarytextview.setText(output);
+        summarytextview.setText(RESPONSEDATA);
+
+
+        Utteranceid = this.hashCode() + "";
+        tts.speak("I have a summary for you." + output + "." + "Ending Session", TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+
+
 
     }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+
+            int result = tts.setLanguage(new Locale("en", "IN"));
+
+            tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                @Override
+                public void onStart(String utteranceId) {
+
+                }
+
+                @Override
+                public void onDone(String utteranceId) {
+                   if(RESPONSEDATA!=null|| !RESPONSEDATA.isEmpty()){
+                       Intent i = new Intent(OngoingSession.this, Dashboard.class);
+                       startActivity(i);
+                       finish();
+
+
+
+                   }
+                }
+
+                @Override
+                public void onError(String utteranceId) {
+
+                }
+            });
+
+            if (result == TextToSpeech.LANG_MISSING_DATA
+                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "This Language is not supported");
+            } else {
+
+
+            }
+
+        } else {
+            Log.e("TTS", "Initilization Failed!");
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+    }
+
 }
 
 

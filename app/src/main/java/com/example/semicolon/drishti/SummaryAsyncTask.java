@@ -3,11 +3,15 @@ package com.example.semicolon.drishti;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.semicolon.drishti.Model.Sessions;
 import com.example.semicolon.drishti.bus.MessageEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
@@ -47,6 +51,13 @@ public class SummaryAsyncTask extends AsyncTask<Void, Void, String> {
             }
             RESPONSE_DATA = response.body().string();
             Log.d("Summaryasyncresponse", RESPONSE_DATA);
+
+
+            DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
+            String date = df.format(Calendar.getInstance().getTime());
+
+            Sessions session5 = new Sessions(date, "Meeting", SESSION_ID, "Persistent Systems Ltd, Verna");
+            session5.save();
 
         } catch (IOException e) {
             e.printStackTrace();
