@@ -135,9 +135,11 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
 
         FirebaseMessaging.getInstance().subscribeToTopic("sceneData");
         tts = new TextToSpeech(this, this);
+        tts.setSpeechRate(0.9f);
 
 
         toggletoolbar = (Toolbar) findViewById(R.id.toggletoolbar);
+        setSupportActionBar(toggletoolbar);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
 
 
@@ -160,6 +162,8 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
             date_time.setText(date);
             summarytextview = (TextView) findViewById(R.id.summarytextview);
             summarycard = (CardView) findViewById(R.id.summarycard);
+
+
             recyclerView = (RecyclerView) findViewById(R.id.ongoingsession_rv);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(linearLayoutManager);

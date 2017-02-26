@@ -43,6 +43,7 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
         setContentView(R.layout.activity_dashboard);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Timeline");
         tts = new TextToSpeech(this,this);
 
         header = (RelativeLayout)findViewById(R.id.header);

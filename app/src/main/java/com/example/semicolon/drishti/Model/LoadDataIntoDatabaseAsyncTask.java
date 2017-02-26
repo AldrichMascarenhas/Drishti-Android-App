@@ -27,7 +27,7 @@ public class LoadDataIntoDatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
 
 
 
-        Sessions session5 = new Sessions("Sun, 26 Feb 2017, 06:30", "Park", random2, "Green Park, Verna");
+        Sessions session5 = new Sessions("Sun, 26 Feb 2017, 06:30", "Park", random2, "Green Park, Verna", "Summary Summary Summary Summary Summary Summary Summary Summary Summary Summary Summary");
         session5.save();
         return null;
 

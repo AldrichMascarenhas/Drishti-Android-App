@@ -56,7 +56,7 @@ public class SummaryAsyncTask extends AsyncTask<Void, Void, String> {
             DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
             String date = df.format(Calendar.getInstance().getTime());
 
-            Sessions session5 = new Sessions(date, "Meeting", SESSION_ID, "Persistent Systems Ltd, Verna");
+            Sessions session5 = new Sessions(date, "Meeting", SESSION_ID, "Persistent Systems Ltd, Verna", RESPONSE_DATA);
             session5.save();
 
         } catch (IOException e) {

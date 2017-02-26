@@ -29,7 +29,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Session"></activity>
-        <activity android:name=".SessionDetail"></activity>
+        <activity android:name=".SessionDetail"
+            android:theme="@style/AppTheme"></activity>
         <activity android:name=".OngoingSession"></activity>
 
 

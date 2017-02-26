@@ -14,16 +14,28 @@ public class Sessions extends SugarRecord {
     String location;
 
 
+    String summary;
+
+
     public Sessions()
     {
 
     }
 
-    public Sessions(String date, String name, int randomID, String location) {
+    public Sessions(String date, String name, int randomID, String location, String summary) {
         this.date = date;
         this.name = name;
         this.randomID = randomID;
         this.location = location;
+        this.summary = summary;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
     public String getDate() {
