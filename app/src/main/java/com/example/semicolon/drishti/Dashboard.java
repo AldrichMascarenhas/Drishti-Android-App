@@ -1,6 +1,8 @@
 package com.example.semicolon.drishti;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
@@ -37,21 +39,39 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
 
     List<Sessions> books;
 
+    SharedPreferences sharedPreferences;
+    boolean firstTime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        sharedPreferences = getSharedPreferences("ShaPreferences", Context.MODE_PRIVATE);
+        firstTime = sharedPreferences.getBoolean("first", true);
+
+        if (firstTime) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("first", false);
+            editor.apply();
+
+            Intent intent = new Intent(Dashboard.this, IntroActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Timeline");
-        tts = new TextToSpeech(this,this);
+        tts = new TextToSpeech(this, this);
 
-        header = (RelativeLayout)findViewById(R.id.header);
+        header = (RelativeLayout) findViewById(R.id.header);
         header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String utterenceid ="head";
-                tts.speak("Rotate Phone to Start Capture ",TextToSpeech.QUEUE_FLUSH,null,utterenceid);
+                String utterenceid = "head";
+                tts.speak("Rotate Phone to Start Capture ", TextToSpeech.QUEUE_FLUSH, null, utterenceid);
             }
         });
 
@@ -65,24 +85,13 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
 
         initialCount = Sessions.count(Sessions.class);
 
-        //Sugar orm
-        if (initialCount == 0) {
 
-            LoadDataIntoDatabaseAsyncTask loadDataIntoDatabaseAsyncTask = new LoadDataIntoDatabaseAsyncTask();
-            loadDataIntoDatabaseAsyncTask.execute();
+        books = Sessions.findWithQuery(Sessions.class, "SELECT * FROM SESSIONS ORDER BY ID DESC");
 
+        mTimeLineAdapter = new TimeLineAdapter(books, this);
+        TimelineRecylerView.setAdapter(mTimeLineAdapter);
 
-        }else{
-
-
-            books = Sessions.findWithQuery(Sessions.class, "SELECT * FROM SESSIONS ORDER BY ID DESC");
-
-            mTimeLineAdapter = new TimeLineAdapter(books, this);
-            TimelineRecylerView.setAdapter(mTimeLineAdapter);
-
-            System.out.println("Hello" + books.size());
-
-        }
+        System.out.println("Hello" + books.size());
 
 
         TimelineRecylerView.addOnItemTouchListener(new SessionRecylerItemClickListener(getApplicationContext(), new SessionRecylerItemClickListener.OnItemClickListener() {
@@ -101,8 +110,6 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
         if (orientation == 1) {
             //Handle Portrait views here
             Log.d(TAG, "ORIENTATION_PORTRAIT");
-
-
 
 
         } else if (orientation == 2) {
@@ -138,7 +145,7 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(tts!=null) {
+        if (tts != null) {
             tts.stop();
             tts.shutdown();
         }

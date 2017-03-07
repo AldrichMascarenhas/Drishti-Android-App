@@ -1,6 +1,7 @@
 package com.example.semicolon.drishti;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.google.firebase.FirebaseApp;
 import com.orm.SugarApp;
@@ -14,6 +15,8 @@ import java.util.Random;
 
 public class ApplicationClass extends Application {
 
+
+    int SESSION_ID;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -21,6 +24,9 @@ public class ApplicationClass extends Application {
         FirebaseApp.initializeApp(this);
 
         SugarContext.init(this);
+
+        Random rand = new Random();
+        this.SESSION_ID =  rand.nextInt(297322) + 1;
     }
 
     @Override
@@ -29,9 +35,14 @@ public class ApplicationClass extends Application {
         SugarContext.terminate();
     }
 
-    //SESSION ID
-    Random rand = new Random();
-    int SESSION_ID =  rand.nextInt(297322) + 1;
+
+    public void setSESSION_ID() {
+        Log.d("ApplicationClass", "SESSION_ID : " + SESSION_ID);
+        Random rand = new Random();
+         this.SESSION_ID =  rand.nextInt(297322) + 1;
+    }
+
+
 
     public int getSESSION_ID() {
         return SESSION_ID;

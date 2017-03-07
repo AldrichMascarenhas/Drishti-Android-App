@@ -1,6 +1,11 @@
 package com.example.semicolon.drishti.Model;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
+
+import com.example.semicolon.drishti.Dashboard;
+import com.example.semicolon.drishti.SessionDetail;
 
 /**
  * Created by Aldrich on 24-02-2017.
@@ -13,6 +18,8 @@ public class LoadDataIntoDatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
     int random2;
 
 
+    public LoadDataIntoDatabaseAsyncTask() {
+    }
 
     @Override
     protected void onPreExecute() {
@@ -36,6 +43,9 @@ public class LoadDataIntoDatabaseAsyncTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
+
+        //NEVER launch it again
+
 
     }
 

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.1"
     defaultConfig {
         applicationId "com.example.semicolon.drishti"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -39,6 +39,10 @@ dependencies {
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'jp.wasabeef:recyclerview-animators:2.2.5'
+    compile 'com.karumi:dexter:4.0.0'
+    compile 'agency.tango.android:material-intro-screen:0.0.5'
+
+
 
 }
 apply plugin: 'com.google.gms.google-services'

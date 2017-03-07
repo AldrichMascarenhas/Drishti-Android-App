@@ -29,6 +29,7 @@ import okhttp3.Response;
 public class ImageUploadAsyncTaskOngoing extends AsyncTask<Void, String, Long> {
 
     public static final String TAG = "ImageUploadAsyncTask";
+    FirebaseInstanceIDService firebaseInstanceIDService;
 
     private OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
@@ -63,6 +64,7 @@ public class ImageUploadAsyncTaskOngoing extends AsyncTask<Void, String, Long> {
                 .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
                 .addFormDataPart("image_id", file.getName())
                 .addFormDataPart("session_id", Integer.toString(SESSION_ID))
+                .addFormDataPart("firebase_id", firebaseInstanceIDService.getRefreshedToken())
                 .build();
 
         request = new Request.Builder()

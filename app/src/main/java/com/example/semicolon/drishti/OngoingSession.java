@@ -119,6 +119,9 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
     String RESPONSEDATA;
 
 
+    //
+    ApplicationClass applicationClass;
+
 
 
     @Override
@@ -134,7 +137,6 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
 
         registerReceiver(myReceiver, new IntentFilter(FireBaseMessagingService.INTENT_FILTER));
 
-        FirebaseMessaging.getInstance().subscribeToTopic("sceneData");
         tts = new TextToSpeech(this, this);
         tts.setSpeechRate(0.9f);
 
@@ -540,6 +542,9 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
                 @Override
                 public void onDone(String utteranceId) {
                    if(RESPONSEDATA!=null|| !RESPONSEDATA.isEmpty()){
+
+                       applicationClass.setSESSION_ID();
+
                        Intent i = new Intent(OngoingSession.this, Dashboard.class);
                        startActivity(i);
                        finish();

@@ -110,7 +110,6 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
         setContentView(R.layout.activity_session);
         registerReceiver(myReceiver, new IntentFilter(FireBaseMessagingService.INTENT_FILTER));
 
-        FirebaseMessaging.getInstance().subscribeToTopic("sceneData");
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
