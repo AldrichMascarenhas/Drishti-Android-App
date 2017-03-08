@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -185,7 +186,6 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                         update();
                     }
 
-                    Log.d("count", String.valueOf(count));
 
                    /* if (changeofdata == true && count == 1) {
                         count++;
@@ -212,14 +212,43 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                             clickcount++;
                             Utteranceid = this.hashCode() + "";
                             if (position == 0) {
-                                tts.speak("To your Right  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    tts.speak("To your Right  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+                                } else {
+                                    tts.speak("To your Right  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null);
+                                }
+
                             } else if (position == 1) {
-                                tts.speak("In front of you  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    tts.speak("In front of you " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+                                } else {
+                                    tts.speak("In front of you  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null);
+                                }
+
+
                             } else if (position == 2) {
-                                tts.speak("To your Left  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    tts.speak("To your Left " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+                                } else {
+                                    tts.speak("To your Left  " + name.getText().toString(), TextToSpeech.QUEUE_ADD, null);
+                                }
+
 
                             } else {
-                                tts.speak(name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    tts.speak(name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+                                } else {
+                                    tts.speak(name.getText().toString(), TextToSpeech.QUEUE_ADD, null);
+                                }
+
 
                             }
 
@@ -291,7 +320,14 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
                     count++;
 
                     if (count == 1) {
-                        tts.speak("We have New Data for You", TextToSpeech.QUEUE_ADD, null, "hello");
+
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            tts.speak("We have New Data for You", TextToSpeech.QUEUE_ADD, null, "HELLO");
+
+                        } else {
+                            tts.speak("We have New Data for You", TextToSpeech.QUEUE_ADD, null);
+                        }
 
 
                     }
@@ -305,14 +341,36 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
 
                         if (tag.equals("faces")) {
                             // Toast.makeText(Session.this, Jobject.getString("result"), Toast.LENGTH_LONG).show();
-                            tts.speak(Jobject.getString("result"), TextToSpeech.QUEUE_ADD, null, "abc");
+
+
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                tts.speak(Jobject.getString("result"), TextToSpeech.QUEUE_ADD, null, "abc");
+
+                            } else {
+                                tts.speak(Jobject.getString("result"), TextToSpeech.QUEUE_ADD, null);
+                            }
+
+
+
+
+
                             facescard.setVisibility(View.VISIBLE);
                             facetext.setText(Jobject.getString("result"));
 
                             facescard.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    tts.speak(facetext.getText(), TextToSpeech.QUEUE_ADD, null, "abc");
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        tts.speak(facetext.getText(), TextToSpeech.QUEUE_ADD, null, "abc");
+
+                                    } else {
+                                        tts.speak(facetext.getText().toString(), TextToSpeech.QUEUE_ADD, null);
+                                    }
+
+
+
 
                                 }
                             });
@@ -514,7 +572,7 @@ public class Session extends AppCompatActivity implements TextToSpeech.OnInitLis
             }, 1000);
 
             //TODO: Change to File if needed
-            ImageUploadAsyncTask imageUploadAsyncTask = new ImageUploadAsyncTask(applicationClass.getSESSION_ID(), outFile.getAbsoluteFile());
+            ImageUploadAsyncTask imageUploadAsyncTask = new ImageUploadAsyncTask(applicationClass.getSESSION_ID(), outFile.getAbsoluteFile(), getApplicationContext());
             imageUploadAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 

@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -131,6 +132,7 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
         SESSION_ID = getIntent().getIntExtra("SESSION_ID_KEY", 0);
         Log.d("SESSION_ID_KEY", "SESSION_ID IS  : " + SESSION_ID + " IN OngoingSession");
 
+        applicationClass = (ApplicationClass) getApplicationContext();
 
         vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -243,7 +245,15 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
                         public void onItemClick(View view, int position) {
                             TextView name = (TextView) view.findViewById(R.id.info_textview);
                             Utteranceid = this.hashCode() + "";
-                            tts.speak(name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                tts.speak(name.getText().toString(), TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+                            } else {
+                                tts.speak(name.getText().toString(), TextToSpeech.QUEUE_ADD, null);
+                            }
+
                         }
                     })
             );
@@ -399,7 +409,7 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
             }, 1000);
 
             //TODO: Change to File if needed
-            ImageUploadAsyncTaskOngoing imageUploadAsyncTaskOngoing = new ImageUploadAsyncTaskOngoing(outFile.getAbsoluteFile(), SESSION_ID);
+            ImageUploadAsyncTaskOngoing imageUploadAsyncTaskOngoing = new ImageUploadAsyncTaskOngoing(outFile.getAbsoluteFile(), SESSION_ID, getApplicationContext());
             imageUploadAsyncTaskOngoing.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
@@ -517,12 +527,20 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
         RESPONSEDATA = output;
         summarycard.setVisibility(View.VISIBLE);
         summarytextview.setText(RESPONSEDATA);
+        applicationClass.setSESSION_ID();
+
 
 
         Utteranceid = this.hashCode() + "";
-        tts.speak("I have a summary for you." + output + "." + "Ending Session", TextToSpeech.QUEUE_ADD, null, Utteranceid);
 
 
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            tts.speak("I have a summary for you." + output + "." + "Ending Session", TextToSpeech.QUEUE_ADD, null, Utteranceid);
+
+        } else {
+            tts.speak("I have a summary for you." + output + "." + "Ending Session", TextToSpeech.QUEUE_ADD, null);
+        }
 
 
     }
@@ -543,7 +561,6 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
                 public void onDone(String utteranceId) {
                    if(RESPONSEDATA!=null|| !RESPONSEDATA.isEmpty()){
 
-                       applicationClass.setSESSION_ID();
 
                        Intent i = new Intent(OngoingSession.this, Dashboard.class);
                        startActivity(i);

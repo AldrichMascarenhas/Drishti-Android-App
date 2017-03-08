@@ -17,6 +17,7 @@ public class ApplicationClass extends Application {
 
 
     int SESSION_ID;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -44,7 +45,10 @@ public class ApplicationClass extends Application {
 
 
 
+
     public int getSESSION_ID() {
         return SESSION_ID;
     }
+
+
 }

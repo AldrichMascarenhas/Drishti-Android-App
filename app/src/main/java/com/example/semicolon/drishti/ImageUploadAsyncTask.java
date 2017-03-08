@@ -1,5 +1,7 @@
 package com.example.semicolon.drishti;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -29,7 +31,8 @@ public class ImageUploadAsyncTask extends AsyncTask<Void, String, Long> {
 
     public static final String TAG = "ImageUploadAsyncTask";
 
-    FirebaseInstanceIDService firebaseInstanceIDService;
+    ApplicationClass applicationClass;
+    Context context;
 
     private OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
@@ -50,9 +53,18 @@ public class ImageUploadAsyncTask extends AsyncTask<Void, String, Long> {
     File file;
     int SESSION_ID;
 
+
+    SharedPreferences sharedPreferences;
+    String firstTime;
+
+
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        sharedPreferences = context.getSharedPreferences("FIREBASE_ID", Context.MODE_PRIVATE);
+        firstTime = sharedPreferences.getString("FIRE_ID", "");
+        Log.d("ImageUploadAsyncTask", firstTime);
+
     }
 
     @Override
@@ -66,7 +78,7 @@ public class ImageUploadAsyncTask extends AsyncTask<Void, String, Long> {
                 .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
                 .addFormDataPart("image_id", file.getName())
                 .addFormDataPart("session_id", Integer.toString(SESSION_ID))
-                .addFormDataPart("firebase_id", firebaseInstanceIDService.getRefreshedToken())
+                .addFormDataPart("firebase_id", firstTime)
                 .build();
 
         request = new Request.Builder()
@@ -122,7 +134,8 @@ public class ImageUploadAsyncTask extends AsyncTask<Void, String, Long> {
     }
 
 
-    public ImageUploadAsyncTask(int SESSION_ID, File file) {
+    public ImageUploadAsyncTask(int SESSION_ID, File file,Context context) {
+        this.context = context.getApplicationContext();
         this.SESSION_ID = SESSION_ID;
         this.file = file;
     }

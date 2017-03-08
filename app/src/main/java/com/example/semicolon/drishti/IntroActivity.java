@@ -2,6 +2,7 @@ package com.example.semicolon.drishti;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -17,51 +18,74 @@ import agency.tango.materialintroscreen.SlideFragmentBuilder;
 
 public class IntroActivity  extends MaterialIntroActivity {
 
+    SharedPreferences sharedPreferences;
+    boolean firstTime;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        LoadDataIntoDatabaseAsyncTask loadDataIntoDatabaseAsyncTask = new LoadDataIntoDatabaseAsyncTask();
-        loadDataIntoDatabaseAsyncTask.execute();
-
-        hideBackButton();
-
-        addSlide(new SlideFragmentBuilder()
-                        .backgroundColor(R.color.colorPrimary)
-                        .buttonsColor(R.color.colorAccent)
-                        .neededPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE})
-                        .title("Hello there")
-                        .description("Before we get started we need a Few Permissions")
-                        .build());
+        sharedPreferences = getSharedPreferences("ShaPreferences", Context.MODE_PRIVATE);
+        firstTime = sharedPreferences.getBoolean("first", false);
 
 
-        addSlide(new SlideFragmentBuilder()
-                        .backgroundColor(R.color.colorPrimary)
-                        .buttonsColor(R.color.colorAccent)
-                        .image(R.drawable.ic_launcher)
-                        .title("Almost there")
-                        .description("Building required Databases")
-                        .build(),
-                new MessageButtonBehaviour(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+        if (firstTime) {
+
+            Intent intent = new Intent(IntroActivity.this, Dashboard.class);
+            startActivity(intent);
+            finish();
+        }else {
+
+            LoadDataIntoDatabaseAsyncTask loadDataIntoDatabaseAsyncTask = new LoadDataIntoDatabaseAsyncTask();
+            loadDataIntoDatabaseAsyncTask.execute();
 
 
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                //Do something after 100ms
-                                Intent i = new Intent(IntroActivity.this, Dashboard.class);
-                                startActivity(i);
-                                finish();
-                            }
-                        }, 3000);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("first", true);
+            editor.apply();
 
 
-                    }
-                }, "Continue"));
+
+
+            hideBackButton();
+
+            addSlide(new SlideFragmentBuilder()
+                    .backgroundColor(R.color.colorPrimary)
+                    .buttonsColor(R.color.colorAccent)
+                    .neededPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE})
+                    .title("Hello there")
+                    .description("Before we get started we need a Few Permissions")
+                    .build());
+
+
+            addSlide(new SlideFragmentBuilder()
+                            .backgroundColor(R.color.colorPrimary)
+                            .buttonsColor(R.color.colorAccent)
+                            .image(R.drawable.ic_launcher)
+                            .title("Almost there")
+                            .description("Building required Databases")
+                            .build(),
+                    new MessageButtonBehaviour(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //Do something after 100ms
+                                    Intent i = new Intent(IntroActivity.this, Dashboard.class);
+                                    startActivity(i);
+                                    finish();
+                                }
+                            }, 3000);
+
+
+                        }
+                    }, "Continue"));
+
+        }
     }
 
 

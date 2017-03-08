@@ -1,5 +1,7 @@
 package com.example.semicolon.drishti;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -29,7 +31,8 @@ import okhttp3.Response;
 public class ImageUploadAsyncTaskOngoing extends AsyncTask<Void, String, Long> {
 
     public static final String TAG = "ImageUploadAsyncTask";
-    FirebaseInstanceIDService firebaseInstanceIDService;
+
+    ApplicationClass applicationClass;
 
     private OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
@@ -47,10 +50,18 @@ public class ImageUploadAsyncTaskOngoing extends AsyncTask<Void, String, Long> {
     File file;
     int SESSION_ID;
 
+    Context context;
+
+    SharedPreferences sharedPreferences;
+    String firstTime;
+
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        sharedPreferences = context.getSharedPreferences("FIREBASE_ID", Context.MODE_PRIVATE);
+        firstTime = sharedPreferences.getString("FIRE_ID", "");
+        Log.d("ImageUploadAsyncTaskOn", firstTime);
     }
 
     @Override
@@ -64,7 +75,7 @@ public class ImageUploadAsyncTaskOngoing extends AsyncTask<Void, String, Long> {
                 .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
                 .addFormDataPart("image_id", file.getName())
                 .addFormDataPart("session_id", Integer.toString(SESSION_ID))
-                .addFormDataPart("firebase_id", firebaseInstanceIDService.getRefreshedToken())
+                .addFormDataPart("firebase_id", firstTime)
                 .build();
 
         request = new Request.Builder()
@@ -116,7 +127,8 @@ public class ImageUploadAsyncTaskOngoing extends AsyncTask<Void, String, Long> {
 
     }
 
-    public ImageUploadAsyncTaskOngoing(File file, int SESSION_ID) {
+    public ImageUploadAsyncTaskOngoing(File file, int SESSION_ID,Context context) {
+        this.context = context.getApplicationContext();
         this.file = file;
         this.SESSION_ID = SESSION_ID;
     }

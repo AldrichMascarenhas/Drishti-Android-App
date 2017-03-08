@@ -21,7 +21,7 @@
 
 
         <activity
-            android:name=".Dashboard"
+            android:name=".IntroActivity"
             android:theme="@style/Theme.Intro">
 
             <intent-filter>
@@ -33,7 +33,7 @@
         </activity>
 
 
-        <activity android:name=".IntroActivity">
+        <activity android:name=".Dashboard">
 
         </activity>
 

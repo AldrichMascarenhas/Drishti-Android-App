@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -39,26 +40,11 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
 
     List<Sessions> books;
 
-    SharedPreferences sharedPreferences;
-    boolean firstTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-
-        sharedPreferences = getSharedPreferences("ShaPreferences", Context.MODE_PRIVATE);
-        firstTime = sharedPreferences.getBoolean("first", true);
-
-        if (firstTime) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("first", false);
-            editor.apply();
-
-            Intent intent = new Intent(Dashboard.this, IntroActivity.class);
-            startActivity(intent);
-            finish();
-        }
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -70,10 +56,17 @@ public class Dashboard extends AppCompatActivity implements TextToSpeech.OnInitL
         header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String utterenceid = "head";
-                tts.speak("Rotate Phone to Start Capture ", TextToSpeech.QUEUE_FLUSH, null, utterenceid);
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    String utterenceid = "head";
+                    tts.speak("Rotate Phone to Start Capture ", TextToSpeech.QUEUE_FLUSH, null, utterenceid);
+                } else {
+                    tts.speak("Rotate Phone to Start Capture ", TextToSpeech.QUEUE_FLUSH, null);
+                }
             }
         });
+
 
         TimelineRecylerView = (RecyclerView) findViewById(R.id.recyclerViewtimeline);
 
