@@ -56,12 +56,24 @@ public class ImageUploadAsyncTaskOngoing extends AsyncTask<Void, String, Long> {
     String firstTime;
 
 
+    SharedPreferences sharedPreferencesNW;
+    String HOST_IP_SP;
+
+
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         sharedPreferences = context.getSharedPreferences("FIREBASE_ID", Context.MODE_PRIVATE);
         firstTime = sharedPreferences.getString("FIRE_ID", "");
         Log.d("ImageUploadAsyncTaskOn", firstTime);
+
+
+        sharedPreferencesNW = context.getSharedPreferences("NETWORK_SHAREDPREF", Context.MODE_PRIVATE);
+        HOST_IP_SP = sharedPreferencesNW.getString("HOST_IP_SP", "104.196.153.37");
+        Log.d("ImageUploadAsyncTaskOn", HOST_IP_SP);
+
+
+
     }
 
     @Override
@@ -79,7 +91,7 @@ public class ImageUploadAsyncTaskOngoing extends AsyncTask<Void, String, Long> {
                 .build();
 
         request = new Request.Builder()
-                .url(CONFIG.ACTUAL_HOST + "upload")
+                .url("http://" + HOST_IP_SP + ":80/" + "upload")
                 .post(requestBody)
                 .build();
 

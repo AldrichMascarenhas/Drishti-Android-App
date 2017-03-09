@@ -1,5 +1,7 @@
 package com.example.semicolon.drishti;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -31,8 +33,22 @@ public class SummaryAsyncTask extends AsyncTask<Void, Void, String> {
 
     public SummaryAsyncTaskResponse delegate = null;
 
-    public SummaryAsyncTask(int SESSION_ID) {
+
+    SharedPreferences sharedPreferencesNW;
+    String HOST_IP_SP;
+    Context context;
+
+    public SummaryAsyncTask(int SESSION_ID, Context context) {
         this.SESSION_ID = SESSION_ID;
+        this.context = context.getApplicationContext();
+
+    }
+
+    @Override
+    protected void onPreExecute() {
+        sharedPreferencesNW = context.getSharedPreferences("NETWORK_SHAREDPREF", Context.MODE_PRIVATE);
+        HOST_IP_SP = sharedPreferencesNW.getString("HOST_IP_SP", "104.196.153.37");
+        Log.d("SummaryAsyncTask", HOST_IP_SP);
     }
 
     @Override
@@ -41,7 +57,7 @@ public class SummaryAsyncTask extends AsyncTask<Void, Void, String> {
         String RESPONSE_DATA = "";
 
         request = new Request.Builder()
-                .url(CONFIG.ACTUAL_HOST+ "summary/" + SESSION_ID)
+                .url("http://" + HOST_IP_SP + ":80/" + "summary/" + SESSION_ID)
                 .build();
 
         try {
@@ -62,7 +78,6 @@ public class SummaryAsyncTask extends AsyncTask<Void, Void, String> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
 
         return RESPONSE_DATA;

@@ -6,9 +6,5 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_alarm"
-        android:title="Meetings"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_add_alarm_white_24dp"/>
+
 </menu>

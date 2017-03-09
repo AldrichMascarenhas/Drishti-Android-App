@@ -456,7 +456,7 @@ public class OngoingSession extends AppCompatActivity implements SummaryAsyncTas
 
                         Toast.makeText(getApplicationContext(), "Stop voice", Toast.LENGTH_SHORT).show();
 
-                        SummaryAsyncTask summaryAsyncTask = new SummaryAsyncTask(SESSION_ID);
+                        SummaryAsyncTask summaryAsyncTask = new SummaryAsyncTask(SESSION_ID, getApplicationContext());
                         summaryAsyncTask.delegate = this;
                         summaryAsyncTask.execute();
 
