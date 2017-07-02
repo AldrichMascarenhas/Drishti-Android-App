@@ -14,14 +14,11 @@ Team Codeminers who won this year Gold medal said, “Our winning app (prototype
 # Disclaimer
 I do NOT own this App or ANY of the Source Code for the Application. This Application was built as part of "Semicolons 2017 - Persistent’s Annual Global Hackathon".
 
+# Gallery:
 
 Check out the YouTube video of a Demo :
 
 [![IMAGE ALT TEXT HERE](https://github.com/AldrichMascarenhas/Drishti-Android-App/blob/master/images/drishti_youtube.png?raw=true)](https://www.youtube.com/watch?v=Umvfv0rWEOs)
-
-
-
-# Gallery:
 
 * Home Screen
 
