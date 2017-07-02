@@ -1,6 +1,6 @@
 # Drishti-Android-App
 
- Drishti — an application which uses advances in deep learning, artificial intelligence, image recognition, person identification, speech-to-text and accessibility technologies to bring value to those who are visually impaired.
+Drishti — an application which uses advances in deep learning, artificial intelligence, image recognition, person identification, speech-to-text and accessibility technologies to bring value to those who are visually impaired.
  
 Check out the Main Repo here :
 https://github.com/semicolons-codeminers
@@ -11,9 +11,9 @@ Team Owners: Pandurang Kamat, Amey Navelkar, Ranjit Naik, Rahul Prabhudesai, Amo
 
 Team Codeminers who won this year Gold medal said, “Our winning app (prototype) DRISHTI for the visually impaired enables them to navigate and experience their everyday personal life more efficiently and lead more effective professional lives, integrating them into the mainstream and driving social change.”
 
-* Home Screen
-* Selected Gif Screen
-* Inline Gif [opened via link shared in Whatsapp]
+# Disclaimer
+I do NOT own this App or ANY of the Source Code for the Application. This Application was built as part of "Semicolons 2017 - Persistent’s Annual Global Hackathon".
+
 
 Check out the YouTube video of a Demo :
 
